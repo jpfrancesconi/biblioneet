@@ -1,0 +1,10 @@
+# prioridad.add:
+#   route_name: io_generic_abml.prioridad.add
+#   title: Nueva Prioridad
+#   appears_on:
+#     - io_generic_abml.prioridad.list
+# io_generic_abml.equipo_tipo.add.link:
+#   title: Nuevo Tipo
+#   route_name: io_generic_abml.equipo_tipo.add
+#   appears_on:
+#     - io_generic_abml.equipo_tipo.list

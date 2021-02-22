@@ -1,0 +1,68 @@
+# Authors routes ########################################################################
+io_generic_abml.author.list:
+  path: '/authors/list'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\AuthorsController::listAuthors'
+    _title: 'Gestion de Autores'
+  requirements:
+    _permission: 'manage authors'
+
+io_generic_abml.author.view:
+  path: '/authors/{author}/{js}'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\AuthorsController::viewAuthor'
+    _title: 'Detalles Autor'
+  requirements:
+    _permission: 'view author'
+    js: 'nojs|ajax'
+  options:
+    parameters:
+      author:
+        type: author
+
+io_generic_abml.author.add:
+  path: '/authors/add'
+  defaults:
+    _form: '\Drupal\io_generic_abml\Form\Autor\AuthorForm'
+    _title: 'Crear Autor'
+  requirements:
+    _permission: 'add author'
+
+io_generic_abml.author.edit:
+  path: '/authors/{author}/edit'
+  defaults:
+    _form: '\Drupal\io_generic_abml\Form\Autor\AuthorForm'
+    _title: 'Editar Autor'
+  requirements:
+    _permission: 'edit author'
+  options:
+    parameters:
+      author:
+        type: author
+
+io_generic_abml.author.delete:
+  path: '/authors/{id}/delete'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Autor\AuthorDeleteForm'
+    _title: 'Eliminar Autor'
+  requirements:
+    _permission: 'delete author'
+
+io_generic_abml.author.delete.modal.form:
+  path: '/author/{id}/delete_modal_form/{js}'
+  defaults:
+    _controller: 'Drupal\io_generic_abml\Controller\AuthorsController::getDeleteModalForm'
+    _title: 'Eliminar Autor'
+  requirements:
+    _permission: 'delete author'
+    js: 'nojs|ajax'
+
+
+# Books routes ########################################################################
+io_generic_abml.books.list:
+  path: '/books/list'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\BooksController::listBooks'
+    _title: 'Gestion de Libros'
+  requirements:
+    _permission: 'list books'

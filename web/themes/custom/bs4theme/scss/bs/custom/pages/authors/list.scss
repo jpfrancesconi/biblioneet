@@ -1,0 +1,27 @@
+body.path-authors {
+  /* Nuevo autor Button */
+  & .block-local-actions-block {
+    & .nav-link {
+      padding: 0;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  }
+
+  /* Resultados list block */
+  & .block.block-system.block-system-main-block form>div.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+
+    & div.container-fluid {
+      padding-left: 0;
+      padding-right: 0;
+
+      // Cards
+      & .card {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}

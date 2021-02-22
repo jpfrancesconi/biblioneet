@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Contains biblioneet.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function biblioneet_theme($existing, $type, $theme, $path) {
+  $templates = [
+    'authors_list_page' => [
+      'variables' => [
+        'results' => [],
+      ],
+      'template' => 'authors/authors-list-page',
+    ],
+    'authors_details_page' => [
+      'variables' => [
+        'image' => null,
+        'author' => null,
+        'edit' => null,
+        'delete' => null,
+      ],
+      'template' => 'authors/authors-details-page',
+    ],
+  ];
+  return $templates;
+}

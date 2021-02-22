@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Contains io_generic_abml.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function io_generic_abml_theme($existing, $type, $theme, $path) {
+  $templates = [
+    'authors_list_page' => [
+      'variables' => [
+        'results' => [],
+        'results_counter' => null,
+      ],
+      'template' => 'authors/authors-list-page',
+    ],
+    'authors_details_page' => [
+      'variables' => [
+        'image' => null,
+        'author' => null,
+        'edit' => null,
+        'delete' => null,
+      ],
+      'template' => 'authors/authors-details-page',
+    ],
+    'books_list_page' => [
+      'variables' => [
+        'results' => [],
+        'results_counter' => null,
+      ],
+      'template' => 'books/books-list-page',
+    ],
+  ];
+  return $templates;
+}

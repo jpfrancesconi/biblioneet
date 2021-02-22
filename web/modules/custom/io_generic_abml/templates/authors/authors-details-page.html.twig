@@ -1,0 +1,24 @@
+{# {{ kint(author) }} #}
+<div class="row">
+  <div class="img-contrainer col-xs-12 col-md-6">
+    <img class="card-img-top"
+    src="{{ image['#attributes']['src'] }}" alt="Card image cap"
+    style="width: 100%; object-fit: cover;">
+  </div>
+  <div class="info-container col-xs-12 col-md-6">
+    <div class="card">
+      <h5 class="card-header">Autor: {{ author.firstName }}, {{ author.lastName }}</h5>
+      <div class="card-body">
+        {% if author.status %}
+          Estado: <p class="badge badge-pill badge-success">ACTIVO</p>
+        {% else %}
+          Estado: <p class="badge badge-pill badge-danger">INACTIVO</p>
+        {% endif %}
+        <p class="card-text">Pais de origen: {{ author.nationality.enShortName }}</p>
+        <p class="card-text">{{ author.description }}</p>
+        {{ edit }}
+        {{ delete }}
+      </div>
+    </div>
+  </div>
+</div>

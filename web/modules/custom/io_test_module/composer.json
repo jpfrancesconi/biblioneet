@@ -1,0 +1,13 @@
+{
+    "name": "io_test_module",
+    "type": "drupal-module",
+    "description": "Modulo de prueba creado por DRUPAL CONSOLE",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/io_test_module",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/io_test_module",
+        "source": "http://cgit.drupalcode.org/io_test_module",
+    },
+}

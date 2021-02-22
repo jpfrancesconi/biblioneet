@@ -1,0 +1,77 @@
+// Mobile first
+@include media-breakpoint-up(sd) {
+  .header {
+    // header background
+    background-color: white;
+    // header main nav
+    & nav.container {
+      display: flex;
+      align-items: center;
+      align-content: center;
+      border-bottom: solid 1px #ccc;
+      & .navbar-brand {
+        display: flex;
+        text-decoration: none;
+        align-items: center;
+        color: #3a3838;
+        font-size: 2rem;
+        font-weight: bold;
+        & img {
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          border: solid 1px #000;
+          margin-right: 15px;
+        }
+      }
+    }
+    // Menu navigation
+    #block-bs4theme-main-menu {
+      display: none;
+    }
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .header {
+    background-color: white;
+    & nav.container {
+      display: flex;
+      justify-content: space-between;
+    }
+    // Menu navigation
+    #block-bs4theme-main-menu {
+      display: block;
+      & ul {
+        text-transform: uppercase;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        & li {
+          padding: 5px;
+        }
+        & li>a {
+          color: #3a3838;
+          font-weight: bold;
+          font-size: 1rem;
+        }
+        // last item ACCESO
+        & li.nav-item:last-child {
+          background-color: #269df1;
+          border-radius: 5px;
+          & .nav-link.nav-link--biblioneetcom-web-user-login {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .header {
+    & .navbar-toggler.navbar-toggler-right {
+      display: none;
+    }
+  }
+}

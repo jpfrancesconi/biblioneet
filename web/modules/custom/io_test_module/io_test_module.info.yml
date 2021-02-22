@@ -1,0 +1,5 @@
+name: 'io_test_module'
+type: module
+description: 'Modulo de prueba creado por DRUPAL CONSOLE'
+core: 8.x
+package: 'Custom'

@@ -1,0 +1,6 @@
+<h1>Listado de libros encontrados</h1>
+
+{% for item in results %}
+  {{ kint(item) }}
+  <p>{{ item.titulo }}</p>
+{% endfor %}

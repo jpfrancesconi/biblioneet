@@ -1,0 +1,320 @@
+# BEGIN: ABML Authors ###########################################################################
+manage authors:
+  title: 'Manage Authors records'
+  description: 'View, add, edit and delete authors records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view author:
+  title: 'View author'
+  description: 'View an author'
+  restrict access: true
+
+add author:
+  title: 'Add Author'
+  description: 'Create a new author'
+  restrict access: true
+
+edit author:
+  title: 'Edit author'
+  description: 'Edit an author'
+  restrict access: true
+
+delete author:
+  title: 'Delete author'
+  description: 'Delete an author'
+  restrict access: true
+
+# BEGIN: ABML - Tipo de equipo   ###################################################################
+manage tipo de equipo:
+  title: 'Manage Tipo de Equipo records'
+  description: 'View, add, edit and delete Tipo de Equipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity tipo de equipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add tipo de equipo:
+  title: 'Add Tipo de Equipo'
+  description: 'Create a new Tipo de Equipo'
+  restrict access: true
+
+edit tipo de equipo:
+  title: 'Edit Tipo de Equipo'
+  description: 'Edit an Tipo de Equipo'
+  restrict access: true
+
+delete tipo de equipo:
+  title: 'Delete Tipo de Equipo'
+  description: 'Delete an Tipo de Equipo'
+  restrict access: true
+# End: ABML - Tipo de equipo   ###################################################################
+
+# BEGIN: ABML - Equipo Clasificación   ###################################################################
+manage equipo clasificacion:
+  title: 'Manage Equipo clasificacion records'
+  description: 'View, add, edit and delete Equipo clasificacion records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity equipo clasificacion:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add equipo clasificacion:
+  title: 'Add Equipo clasificacion'
+  description: 'Create a new Equipo clasificacion'
+  restrict access: true
+
+edit equipo clasificacion:
+  title: 'Edit Equipo clasificacion'
+  description: 'Edit an Equipo clasificacion'
+  restrict access: true
+
+delete equipo clasificacion:
+  title: 'Delete Equipo clasificacion'
+  description: 'Delete an Equipo clasificacion'
+  restrict access: true
+# End: ABML - Tipo de equipo   ###################################################################
+
+# BEGIN: ABML - Danio tipo   ###################################################################
+manage danio tipo:
+  title: 'Manage Danio tipo records'
+  description: 'View, add, edit and delete Danio tipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity danio tipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add danio tipo:
+  title: 'Add Danio tipo'
+  description: 'Create a new Danio tipo'
+  restrict access: true
+
+edit danio tipo:
+  title: 'Edit Danio tipo'
+  description: 'Edit an Danio tipo'
+  restrict access: true
+
+delete danio tipo:
+  title: 'Delete Danio tipo'
+  description: 'Delete an Danio tipo'
+  restrict access: true
+# End: ABML - Danio tipo   ###################################################################
+
+# BEGIN: ABML - Falla tipo   ###################################################################
+manage falla tipo:
+  title: 'Manage Falla tipo records'
+  description: 'View, add, edit and delete Falla tipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity falla tipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add falla tipo:
+  title: 'Add Falla tipo'
+  description: 'Create a new Falla tipo'
+  restrict access: true
+
+edit falla tipo:
+  title: 'Edit Falla tipo'
+  description: 'Edit an Falla tipo'
+  restrict access: true
+
+delete falla tipo:
+  title: 'Delete Falla tipo'
+  description: 'Delete an Falla tipo'
+  restrict access: true
+# End: ABML - Falla tipo   ###################################################################
+
+# BEGIN: ABML - Frecuencia fecha tipo   ###################################################################
+manage frecuencia fecha tipo:
+  title: 'Manage Frecuencia fecha tipo records'
+  description: 'View, add, edit and delete Frecuencia fecha tipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity frecuencia fecha tipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add frecuencia fecha tipo:
+  title: 'Add Frecuencia fecha tipo'
+  description: 'Create a new Frecuencia fecha tipo'
+  restrict access: true
+
+edit frecuencia fecha tipo:
+  title: 'Edit Frecuencia fecha tipo'
+  description: 'Edit an Frecuencia fecha tipo'
+  restrict access: true
+
+delete frecuencia fecha tipo:
+  title: 'Delete Frecuencia fecha tipo'
+  description: 'Delete an Frecuencia fecha tipo'
+  restrict access: true
+# End: ABML - Frecuencia fecha tipo   ###################################################################
+
+
+# BEGIN: ABML - Trabajo tipo   ###################################################################
+manage trabajo tipo:
+  title: 'Manage Trabajo tipo records'
+  description: 'View, add, edit and delete Trabajo tipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity trabajo tipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add trabajo tipo:
+  title: 'Add Trabajo tipo'
+  description: 'Create a new Trabajo tipo'
+  restrict access: true
+
+edit trabajo tipo:
+  title: 'Edit Trabajo tipo'
+  description: 'Edit an Trabajo tipo'
+  restrict access: true
+
+delete trabajo tipo:
+  title: 'Delete Trabajo tipo'
+  description: 'Delete an Trabajo tipo'
+  restrict access: true
+# End: ABML - Trabajo tipo   ###################################################################
+
+# BEGIN: ABML - Falla Causa   ###################################################################
+manage falla causa:
+  title: 'Manage Falla Causa records'
+  description: 'View, add, edit and delete Falla Causa records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity falla causa:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add falla causa:
+  title: 'Add Falla Causa'
+  description: 'Create a new Falla Causa'
+  restrict access: true
+
+edit falla causa:
+  title: 'Edit Falla Causa'
+  description: 'Edit an Falla Causa'
+  restrict access: true
+
+delete falla causa:
+  title: 'Delete Falla Causa'
+  description: 'Delete an Falla Causa'
+  restrict access: true
+# End: ABML - Falla Causa   ###################################################################
+
+# BEGIN: ABML - Unidad de Medida   ###################################################################
+manage unidades de medida:
+  title: 'Manage Unidad de medida records'
+  description: 'View, add, edit and delete Unidad de medida records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+add unidad de medida:
+  title: 'Add Unidad de medida'
+  description: 'Create a new Unidad de medida'
+  restrict access: true
+
+edit unidades de medida:
+  title: 'Edit Unidad de medida'
+  description: 'Edit an Unidad de medida'
+  restrict access: true
+
+delete unidades de medida:
+  title: 'Delete Unidad de medida'
+  description: 'Delete an Unidad de medida'
+  restrict access: true
+# END: ABML - Unidad de Medida   ###################################################################
+
+# BEGIN: ABML - ActividadClasificacion   ###################################################################
+manage actividad clasificacion:
+  title: 'Manage Clasificacion de actividad records'
+  description: 'View, add, edit and delete Clasificacion de actividad records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+add actividad clasificacion:
+  title: 'Add Clasificacion de actividad'
+  description: 'Create a new Clasificacion de actividad'
+  restrict access: true
+
+edit actividad clasificacion:
+  title: 'Edit Clasificacion de actividad'
+  description: 'Edit an Clasificacion de actividad'
+  restrict access: true
+
+delete actividad clasificacion:
+  title: 'Delete Clasificacion de actividad'
+  description: 'Delete an Clasificacion de actividad'
+  restrict access: true
+# END: ABML - ActividadClasificacion   ###################################################################
+
+# BEGIN: ABML - RegimenTipo   ###################################################################
+manage tipo de regimen:
+  title: 'Manage Tipo de regimen records'
+  description: 'View, add, edit and delete Tipo de regimen records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+add tipo de regimen:
+  title: 'Add Tipo de regimen'
+  description: 'Create a new Tipo de regimen'
+  restrict access: true
+
+edit tipo de regimen:
+  title: 'Edit Tipo de regimen'
+  description: 'Edit an Tipo de regimen'
+  restrict access: true
+
+delete tipo de regimen:
+  title: 'Delete Tipo de regimen'
+  description: 'Delete an Tipo de regimen'
+  restrict access: true
+# END: ABML - RegimenTipo   ###################################################################
+
+# BEGIN: ABML - Contacto tipo   ###################################################################
+manage contacto tipo:
+  title: 'Manage Contacto tipo records'
+  description: 'View, add, edit and delete Contacto tipo records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+view entity contacto tipo:
+  title: 'View entity'
+  description: 'View an entity'
+  restrict access: true
+
+add contacto tipo:
+  title: 'Add Contacto tipo'
+  description: 'Create a new Contacto tipo'
+  restrict access: true
+
+edit contacto tipo:
+  title: 'Edit Contacto tipo'
+  description: 'Edit an Contacto tipo'
+  restrict access: true
+
+delete contacto tipo:
+  title: 'Delete Contacto tipo'
+  description: 'Delete an Contacto tipo'
+  restrict access: true
+# End: ABML - Contacto tipo   ###################################################################
