@@ -59,10 +59,10 @@ io_generic_abml.author.delete.modal.form:
 
 
 # Books routes ########################################################################
-io_generic_abml.books.list:
-  path: '/books/list'
+io_generic_abml.articles.list:
+  path: '/articles/list'
   defaults:
-    _controller: '\Drupal\io_generic_abml\Controller\BooksController::listBooks'
-    _title: 'Gestion de Libros'
+    _controller: '\Drupal\io_generic_abml\Controller\ArticlesController::listArticles'
+    _title: 'Gestion de Catalogos'
   requirements:
-    _permission: 'list books'
+    _permission: 'list articles'

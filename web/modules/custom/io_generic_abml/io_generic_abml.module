@@ -26,12 +26,12 @@ function io_generic_abml_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'authors/authors-details-page',
     ],
-    'books_list_page' => [
+    'articles_list_page' => [
       'variables' => [
         'results' => [],
         'results_counter' => null,
       ],
-      'template' => 'books/books-list-page',
+      'template' => 'articles/articles-list-page',
     ],
   ];
   return $templates;
