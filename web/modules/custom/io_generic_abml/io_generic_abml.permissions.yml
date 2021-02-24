@@ -25,6 +25,25 @@ delete author:
   description: 'Delete an author'
   restrict access: true
 
+# BEGIN: ABML Articles ###########################################################################
+list articles:
+  title: 'Manage Articles records'
+  description: 'View, add, edit and delete articles records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+
+
+
+
+
+
+
+
+
+
+
+# Delete all this below
 # BEGIN: ABML - Tipo de equipo   ###################################################################
 manage tipo de equipo:
   title: 'Manage Tipo de Equipo records'

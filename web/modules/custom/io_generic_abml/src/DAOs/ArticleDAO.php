@@ -8,6 +8,8 @@ use Drupal\io_generic_abml\DAOs\GenericDAO;
 
 use Drupal\io_generic_abml\DTOs\BookDTO;
 use Drupal\io_generic_abml\DTOs\ArticleDTO;
+use Drupal\io_generic_abml\DTOs\ArticleTypeDTO;
+use Drupal\io_generic_abml\DTOs\ArticleFormatDTO;
 use Drupal\io_generic_abml\DTOs\EditorialDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
 
@@ -42,18 +44,22 @@ class ArticleDAO extends GenericDAO {
       $limit = 15;
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
       ->fields(self::TABLE_ALIAS, [
-        'id', 'isbn', 'titulo', 'anio_edicion', 'cant_paginas', 'idioma', 'createdon', 'updatedon'
+        'id', 'title', 'cover', 'inv_code', 'createdon', 'updatedon'
       ]);
 
-    // Add join to bn_countries table
-    $query->leftjoin('bn_editorial', 'ed', 'ed.id = b.editorial_id');
-    $query->fields('ed', ['id', 'editorial', 'activo']);
+    // Add join to bn_article_type table
+    $query->leftjoin('bn_article_type', 'at', 'at.id = '.self::TABLE_ALIAS.'.article_type_id');
+    $query->fields('at', ['id', 'type', 'status']);
+
+    // Add join to bn_article_format table
+    $query->leftjoin('bn_article_format', 'af', 'af.id = '.self::TABLE_ALIAS.'.article_format_id');
+    $query->fields('af', ['id', 'format', 'status']);
 
     // Add the audit fields to the query.
     $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
     // If $search_key is not null means that need to add the where condition.
     if (!is_null($search_key)) {
-      $query->condition(self::TABLE_ALIAS . '.titulo', "%" . Html::escape($search_key) . "%", 'LIKE');
+      $query->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_key) . "%", 'LIKE');
     }
     // Add the orderBy sentences to the query using the header.
     //$query->extend('Drupal\Core\Database\Query\TableSortExtender')->orderByHeader($header);
@@ -71,7 +77,7 @@ class ArticleDAO extends GenericDAO {
     $resultsDTO = [];
     // DB results iterations
     foreach ($result as $key => $row) {
-      $entityDTO = self::getBookDTOFromRecord($row);
+      $entityDTO = self::getArticleDTOFromRecord($row);
       // Add element to result array
       array_push($resultsDTO, $entityDTO);
     }
@@ -89,40 +95,48 @@ class ArticleDAO extends GenericDAO {
    * @return BookDTO $bookDTO
    *   DTO object
    */
-  private static function getBookDTOFromRecord($row) {
-    $bookDTO = new BookDTO();
+  private static function getArticleDTOFromRecord($row) {
+    $articleDTO = new ArticleDTO();
     $createdBy = new UserDTO();
     $updatedBy = new UserDTO();
 
     // set simple fields
-    $bookDTO->setId($row->id);
-    $bookDTO->setIsbn($row->isbn);
-    $bookDTO->setTitulo($row->titulo);
-    $bookDTO->setAnioEdicion($row->anio_edicion);
-    $bookDTO->setCantPaginas($row->cant_paginas);
-    $bookDTO->setIdioma($row->idioma);
-
-    if (isset($row->ed_id)) {
-      $editorialDTO = new EditorialDTO();
-      $editorialDTO->setId($row->ed_id);
-      $editorialDTO->setEditorial($row->editorial);
-      $editorialDTO->setActivo($row->activo);
-      $bookDTO->setEditorial($editorialDTO);
+    $articleDTO->setId($row->id);
+    $articleDTO->setTitle($row->title);
+    $articleDTO->setCover($row->cover);
+    $articleDTO->setInvCode($row->inv_code);
+    
+    // Article Type
+    if (isset($row->at_id)) {
+       $articleTypeDTO = new ArticleTypeDTO();
+       $articleTypeDTO->setId($row->at_id);
+       $articleTypeDTO->setType($row->type);
+       $articleTypeDTO->setStatus($row->status);
+       $articleDTO->setArticleType($articleTypeDTO);
     }
+
+    // Article Format
+    if (isset($row->af_id)) {
+      $articleFormatDTO = new ArticleFormatDTO();
+      $articleFormatDTO->setId($row->af_id);
+      $articleFormatDTO->setType($row->format);
+      $articleFormatDTO->setStatus($row->af_status);
+      $articleDTO->setArticleType($articleFormatDTO);
+   }
 
     // set audit fields
     $createdBy->setUid($row->createdby_uid);
     $createdBy->setUsername($row->createdby);
-    $bookDTO->setCreatedBy($createdBy);
+    $articleDTO->setCreatedBy($createdBy);
 
-    $bookDTO->setCreatedOn($row->createdon);
+    $articleDTO->setCreatedOn($row->createdon);
 
     $updatedBy->setUid($row->updatedby_uid);
     $updatedBy->setUsername($row->updatedby);
-    $bookDTO->setUpdatedBy($updatedBy);
+    $articleDTO->setUpdatedBy($updatedBy);
 
-    $bookDTO->setUpdatedOn($row->updatedon);
+    $articleDTO->setUpdatedOn($row->updatedon);
 
-    return $bookDTO;
+    return $articleDTO;
   }
 }
