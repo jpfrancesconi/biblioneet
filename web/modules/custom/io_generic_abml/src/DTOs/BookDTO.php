@@ -2,14 +2,16 @@
 
 namespace Drupal\io_generic_abml\DTOs;
 
-class BookDTO extends GenericDTO {
+use Drupal\io_generic_abml\DTOs\ArticleDTO;
+
+class BookDTO extends ArticleDTO {
 
   /**
    * ID Table Primary key
    *
    * @var Integer
    */
-  protected $id;
+  protected $idBook;
 
   /**
    * ISBN book code
@@ -53,11 +55,11 @@ class BookDTO extends GenericDTO {
    */
   protected $idioma;
 
-  public function setId($id) {
-    $this->id = $id;
+  public function setIdBook($idBook) {
+    $this->idBook = $idBook;
   }
-  public function getId() {
-    return $this->id;
+  public function getIdBook() {
+    return $this->idBook;
   }
 
   public function setIsbn($isbn) {

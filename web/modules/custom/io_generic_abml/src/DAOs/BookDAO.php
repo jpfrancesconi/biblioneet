@@ -78,6 +78,26 @@ class BookDAO extends GenericDAO {
     return $results;
   }
 
+  /**
+   * To load a bn_book record.
+   *
+   * @param int $id
+   *   The article ID.
+   */
+  public static function loadByArticleId($articleId) {
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id', 'isbn', 'titulo'
+          , 'anio_edicion', 'cant_paginas', 'idioma', 'createdon', 'updatedon']);
+    // Get crator username
+    $query = parent::addAuditFields($query, self::TABLE_ALIAS);
+
+    $result = $query->condition('article_id', $articleId, '=')->execute()->fetchObject();
+
+    $bookDTO = self::getBookDTOFromRecord($result);
+
+    return $bookDTO;
+  }
+
   /** Utis methods *********************************************************************************/
   /**
    * Create a BookDTO from stdClass from DB Record
@@ -93,7 +113,7 @@ class BookDAO extends GenericDAO {
     $updatedBy = new UserDTO();
 
     // set simple fields
-    $bookDTO->setId($row->id);
+    $bookDTO->setIdBook($row->id);
     $bookDTO->setIsbn($row->isbn);
     $bookDTO->setTitulo($row->titulo);
     $bookDTO->setAnioEdicion($row->anio_edicion);

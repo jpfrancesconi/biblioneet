@@ -96,7 +96,32 @@ class ArticleDAO extends GenericDAO {
    *   DTO object
    */
   private static function getArticleDTOFromRecord($row) {
-    $articleDTO = new ArticleDTO();
+    // Check Article Format to create the correct Object
+    if (isset($row->af_id)) {
+      switch ($row->type) {
+        case 'LIBRO':
+          $articleDTO = BookDAO::loadByArticleId($row->id);
+          break;
+        case 'REVISTA':
+          $articleDTO = MagazineDAO::loadByArticleId($row->id);
+          break;
+        case 'MULTIMEDIA':
+          # code...
+          break;
+        case 'MONOGRAFÍA':
+          # code...
+          break;
+        case 'DIARIO/PERIÓDICO':
+          # code...
+          break;  
+
+        default:
+          # code...
+          break;
+      }
+    }
+    
+    //$articleDTO = new ArticleDTO();
     $createdBy = new UserDTO();
     $updatedBy = new UserDTO();
 
@@ -119,9 +144,9 @@ class ArticleDAO extends GenericDAO {
     if (isset($row->af_id)) {
       $articleFormatDTO = new ArticleFormatDTO();
       $articleFormatDTO->setId($row->af_id);
-      $articleFormatDTO->setType($row->format);
+      $articleFormatDTO->setFormat($row->format);
       $articleFormatDTO->setStatus($row->af_status);
-      $articleDTO->setArticleType($articleFormatDTO);
+      $articleDTO->setArticleFormat($articleFormatDTO);
    }
 
     // set audit fields
