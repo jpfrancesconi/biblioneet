@@ -1,6 +1,25 @@
-<h1>Listado de libros encontrados</h1>
-
-{% for item in results %}
-  {{ kint(item) }}
-  <p>{{ item.title }}</p>
-{% endfor %}
+<div class="container-fluid">
+  {% if results %}
+  <h1>Listado de artículos encontrados</h1>
+  <div class="container-fluid">
+	  <p>{{ results_counter }}</p>
+    <div class="row" style="margin: 0 auto; display: flex;
+		    flex-wrap: wrap; justify-content: space-between;">
+      {% for item in results %}
+      <div class="card" style="width: 18rem; text-align: center;">
+        <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="text-align: center; width: 150px; height: 150px; object-fit: cover; margin: 0 auto;">
+        <div class="card-body">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <p>{{ item.editorial }}</p>
+          <p class="badge badge-pill badge-success">{{ item.articleType }}</p>
+          <p class="badge badge-pill badge-success">{{ item.articleFormat }}</p>
+          {{ kint(item) }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <h1>No se han encontrado resultados para los filtros ingresados</h1>
+  {% endif %}
+</div>
