@@ -28,8 +28,10 @@ function io_generic_abml_theme($existing, $type, $theme, $path) {
     ],
     'articles_list_page' => [
       'variables' => [
+        'search_form' => null,
         'results' => [],
         'results_counter' => null,
+        'pager' => null,
       ],
       'template' => 'articles/articles-list-page',
     ],

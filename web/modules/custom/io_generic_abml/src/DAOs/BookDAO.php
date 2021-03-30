@@ -45,7 +45,7 @@ class BookDAO extends GenericDAO {
 
     // Add join to bn_countries table
     $query->leftjoin('bn_editorial', 'ed', 'ed.id = b.editorial_id');
-    $query->fields('ed', ['id', 'editorial', 'activo']);
+    $query->fields('ed', ['id', 'editorial', 'status']);
 
     // Add the audit fields to the query.
     $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
@@ -79,6 +79,16 @@ class BookDAO extends GenericDAO {
   }
 
   /**
+   * To insert a new record into DB.
+   *
+   * @param array $fields
+   *   An array conating the book data in key value pair.
+   */
+  public static function add(array $fields) {
+    return \Drupal::database()->insert(self::TABLE_NAME)->fields($fields)->execute();
+  }
+
+  /**
    * To load a bn_book record.
    *
    * @param int $id
@@ -86,9 +96,13 @@ class BookDAO extends GenericDAO {
    */
   public static function loadByArticleId($articleId) {
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
-      ->fields(self::TABLE_ALIAS, ['id', 'isbn', 'titulo'
-          , 'anio_edicion', 'cant_paginas', 'idioma', 'createdon', 'updatedon']);
-    // Get crator username
+      ->fields(self::TABLE_ALIAS, ['id', 'isbn', 'anio_edicion', 'cant_paginas', 'idioma', 'createdon', 'updatedon']);
+
+    // Add join to bn_countries table
+    $query->leftjoin('bn_editorial', 'ed', 'ed.id = b.editorial_id');
+    $query->fields('ed', ['id', 'editorial', 'status']);
+
+      // Get crator username
     $query = parent::addAuditFields($query, self::TABLE_ALIAS);
 
     $result = $query->condition('article_id', $articleId, '=')->execute()->fetchObject();
@@ -115,7 +129,6 @@ class BookDAO extends GenericDAO {
     // set simple fields
     $bookDTO->setIdBook($row->id);
     $bookDTO->setIsbn($row->isbn);
-    $bookDTO->setTitulo($row->titulo);
     $bookDTO->setAnioEdicion($row->anio_edicion);
     $bookDTO->setCantPaginas($row->cant_paginas);
     $bookDTO->setIdioma($row->idioma);
@@ -124,7 +137,7 @@ class BookDAO extends GenericDAO {
       $editorialDTO = new EditorialDTO();
       $editorialDTO->setId($row->ed_id);
       $editorialDTO->setEditorial($row->editorial);
-      $editorialDTO->setActivo($row->activo);
+      $editorialDTO->setActivo($row->status);
       $bookDTO->setEditorial($editorialDTO);
     }
 

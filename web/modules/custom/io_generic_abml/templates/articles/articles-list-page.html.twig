@@ -1,8 +1,10 @@
 <div class="container-fluid">
+  {{ search_form }}
   {% if results %}
   <h1>Listado de artículos encontrados</h1>
   <div class="container-fluid">
-	  <p>{{ results_counter }}</p>
+    <p>Mostrando registros {{ results_counter.start }} - {{ results_counter.end }} de  {{ results_counter.total }} </p>
+	  <p> {{ pager }} </p>
     <div class="row" style="margin: 0 auto; display: flex;
 		    flex-wrap: wrap; justify-content: space-between;">
       {% for item in results %}
@@ -10,10 +12,10 @@
         <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="text-align: center; width: 150px; height: 150px; object-fit: cover; margin: 0 auto;">
         <div class="card-body">
           <h5 class="card-title">{{ item.title }}</h5>
-          <p>{{ item.editorial }}</p>
+          {% if item.editorial %}<p>Editorial: {{ item.editorial }}</p>{% endif %}
           <p class="badge badge-pill badge-success">{{ item.articleType }}</p>
           <p class="badge badge-pill badge-success">{{ item.articleFormat }}</p>
-          {{ kint(item) }}
+          {#{ kint(item) }#}
         </div>
       </div>
       {% endfor %}

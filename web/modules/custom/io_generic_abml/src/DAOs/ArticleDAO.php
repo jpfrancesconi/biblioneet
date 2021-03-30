@@ -5,6 +5,7 @@ namespace Drupal\io_generic_abml\DAOs;
 use Drupal\Component\Utility\Html;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
+use Drupal\io_generic_abml\DAOs\InstanceDAO;
 
 use Drupal\io_generic_abml\DTOs\BookDTO;
 use Drupal\io_generic_abml\DTOs\ArticleDTO;
@@ -39,9 +40,9 @@ class ArticleDAO extends GenericDAO {
    * @param int $limit
    *   The number of records to be fetched.
    */
-  public static function getAll($search_key = NULL, $limit = NULL) {
+  public static function getAll($search_article = NULL, $search_article_type = NULL, $limit = NULL) {
     if (!isset($limit))
-      $limit = 15;
+      $limit = 20;
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
       ->fields(self::TABLE_ALIAS, [
         'id', 'title', 'cover', 'inv_code', 'createdon', 'updatedon'
@@ -57,10 +58,40 @@ class ArticleDAO extends GenericDAO {
 
     // Add the audit fields to the query.
     $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
-    // If $search_key is not null means that need to add the where condition.
-    if (!is_null($search_key)) {
-      $query->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_key) . "%", 'LIKE');
+
+    // Now we hace to check if user has selected any filter: $search_article_type
+    if(isset($search_article_type)) {
+      switch ($search_article_type) {
+        case '1':
+          # TITULO
+          // If $search_key is not null means that need to add the where condition.
+          if (!is_null($search_article)) {
+            $query->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_article) . "%", 'LIKE');
+          }
+          break;
+
+        case '2':
+          # AUTOR
+          break;
+
+        case '3':
+          # MATERIA
+          break;
+
+        case '4':
+          # ISBN
+          // Add join to bn_book table
+          $query->leftjoin('bn_book', 'bk', 'bk.article_id = ' . self::TABLE_ALIAS . '.id');
+          $query->condition('bk.isbn', "%" . Html::escape($search_article) . "%", 'LIKE');
+          break;
+
+        default:
+          # code...
+          $a =1;
+          break;
+      }
     }
+
     // Add the orderBy sentences to the query using the header.
     //$query->extend('Drupal\Core\Database\Query\TableSortExtender')->orderByHeader($header);
     // Add the range sentence (limit, lenght) to the query using the page number.
@@ -86,9 +117,87 @@ class ArticleDAO extends GenericDAO {
     return $results;
   }
 
+  /**
+   * To load an Article record.
+   *
+   * @param int $id
+   *   The article ID.
+   */
+  public static function load($id) {
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, [
+        'id', 'title', 'cover', 'inv_code', 'createdon', 'updatedon'
+      ]);
+
+    // Add join to bn_article_type table
+    $query->leftjoin('bn_article_type', 'at', 'at.id = ' . self::TABLE_ALIAS . '.article_type_id');
+    $query->fields('at', ['id', 'type', 'status']);
+
+    // Add join to bn_article_format table
+    $query->leftjoin('bn_article_format', 'af', 'af.id = ' . self::TABLE_ALIAS . '.article_format_id');
+    $query->fields('af', ['id', 'format', 'status']);
+
+    // Get crator username
+    $query = parent::addAuditFields($query, self::TABLE_ALIAS);
+
+    $result = $query->condition(self::TABLE_ALIAS . '.id', $id, '=')->execute()->fetchObject();
+    $articleDTO = self::getArticleDTOFromRecord($result);
+
+    return $articleDTO;
+  }
+
+  /**
+   * To insert a new record into DB.
+   *
+   * @param array $fields
+   *   An array conating the author data in key value pair.
+   */
+  public static function add(array $fields, $instances = NULL) {
+    $idNewArticle = \Drupal::database()->insert(self::TABLE_NAME)->fields($fields)->execute();
+
+    if(isset($instances)){
+      for ($i=0; $i < $instances; $i++) {
+        $fields2 = [
+          'instance_status_id' => 1, //DISPONIBLE
+          'article_id' => $idNewArticle,
+          'createdby' => $fields['createdby'],
+        ];
+        InstanceDAO::add($fields2);
+      }
+    }
+
+    return $idNewArticle;
+  }
+
+  /**
+   * Get the list of Article Types in the select format
+   */
+  public static function getArticlesTypesSelectFormat($status = NULL) {
+    $select_options = parent::getListSelectFormat('bn_article_type', 'type', $status);
+
+    return $select_options;
+  }
+
+  /**
+   * Get the list of Article Formats in the select format
+   */
+  public static function getArticlesFormatsSelectFormat($status = NULL) {
+    $select_options = parent::getListSelectFormat('bn_article_format', 'format', $status);
+
+    return $select_options;
+  }
+
+  /**
+   * Get the list of Article Formats in the select format
+   */
+  public static function getEditorialesSelectFormat($status = NULL) {
+    $select_options = parent::getListSelectFormat('bn_editorial', 'editorial', $status);
+
+    return $select_options;
+  }
   /** Utis methods *********************************************************************************/
   /**
-   * Create a BookDTO from stdClass from DB Record
+   * Create a ArticleDTO from stdClass from DB Record
    *
    * @param stdClass $row
    *   stdClass DB record
@@ -106,21 +215,21 @@ class ArticleDAO extends GenericDAO {
           $articleDTO = MagazineDAO::loadByArticleId($row->id);
           break;
         case 'MULTIMEDIA':
-          # code...
+          $articleDTO = MultimediaDAO::loadByArticleId($row->id);
           break;
         case 'MONOGRAFÍA':
           # code...
           break;
         case 'DIARIO/PERIÓDICO':
           # code...
-          break;  
+          break;
 
         default:
           # code...
           break;
       }
     }
-    
+
     //$articleDTO = new ArticleDTO();
     $createdBy = new UserDTO();
     $updatedBy = new UserDTO();
@@ -130,7 +239,7 @@ class ArticleDAO extends GenericDAO {
     $articleDTO->setTitle($row->title);
     $articleDTO->setCover($row->cover);
     $articleDTO->setInvCode($row->inv_code);
-    
+
     // Article Type
     if (isset($row->at_id)) {
        $articleTypeDTO = new ArticleTypeDTO();

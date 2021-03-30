@@ -28,13 +28,6 @@ class BookDTO extends ArticleDTO {
   protected $editorial;
 
   /**
-   * Book title
-   *
-   * @var String
-   */
-  protected $titulo;
-
-  /**
    * Book edition year
    *
    * @var Integer
@@ -74,13 +67,6 @@ class BookDTO extends ArticleDTO {
   }
   public function getEditorial() {
     return $this->editorial;
-  }
-
-  public function setTitulo($titulo) {
-    $this->titulo = $titulo;
-  }
-  public function getTitulo() {
-    return $this->titulo;
   }
 
   public function setAnioEdicion($anioEdicion) {

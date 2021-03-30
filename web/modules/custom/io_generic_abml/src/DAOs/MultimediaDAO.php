@@ -6,24 +6,24 @@ use Drupal\Component\Utility\Html;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
 
-use Drupal\io_generic_abml\DTOs\MagazineDTO;
+use Drupal\io_generic_abml\DTOs\MultimediaDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
 
 
 /**
- * DAO class for magazine entity.
+ * DAO class for multimedia entity.
  */
-class MagazineDAO extends GenericDAO {
+class MultimediaDAO extends GenericDAO {
   /**
    * @var const TABLE_NAME
    *  Name of the db table related with the entity
    */
-  private const TABLE_NAME = 'bn_magazine';
+  private const TABLE_NAME = 'bn_multimedia';
   /**
    * @var const TABLE_ALIAS
    *  Table alias used by the differents querys
    */
-  private const TABLE_ALIAS = 'mg';
+  private const TABLE_ALIAS = 'mm';
 
   /**
    * To insert a new record into DB.
@@ -36,56 +36,55 @@ class MagazineDAO extends GenericDAO {
   }
 
   /**
-   * To load a bn_book record.
+   * To load a bn_multimedia record.
    *
    * @param int $id
    *   The article ID.
    */
   public static function loadByArticleId($articleId) {
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
-      ->fields(self::TABLE_ALIAS, ['id', 'numero', 'createdon', 'updatedon']);
+      ->fields(self::TABLE_ALIAS, ['id', 'description', 'createdon', 'updatedon']);
     // Get crator username
     $query = parent::addAuditFields($query, self::TABLE_ALIAS);
 
     $result = $query->condition('article_id', $articleId, '=')->execute()->fetchObject();
 
-    $bookDTO = self::getMagazineDTOFromRecord($result);
+    $multimediaDTO = self::getMultimediaDTOFromRecord($result);
 
-    return $bookDTO;
+    return $multimediaDTO;
   }
 
   /** Utis methods *********************************************************************************/
   /**
-   * Create a magazineDTO from stdClass from DB Record
+   * Create a multimediaDTO from stdClass from DB Record
    *
    * @param stdClass $row
    *   stdClass DB record
-   * @return MagazineDTO $magazineDTO
+   * @return MultimediaDTO $multimediaDTO
    *   DTO object
    */
-  private static function getMagazineDTOFromRecord($row) {
-    $magazineDTO = new MagazineDTO();
+  private static function getMultimediaDTOFromRecord($row) {
+    $multimediaDTO = new MultimediaDTO();
     $createdBy = new UserDTO();
     $updatedBy = new UserDTO();
 
     // set simple fields
-    $magazineDTO->setIdMagazine($row->id);
-    $magazineDTO->setNumero($row->numero);
+    $multimediaDTO->setIdMultimedia($row->id);
+    $multimediaDTO->setDescription($row->description);
 
     // set audit fields
     $createdBy->setUid($row->createdby_uid);
     $createdBy->setUsername($row->createdby);
-    $magazineDTO->setCreatedBy($createdBy);
+    $multimediaDTO->setCreatedBy($createdBy);
 
-    $magazineDTO->setCreatedOn($row->createdon);
+    $multimediaDTO->setCreatedOn($row->createdon);
 
     $updatedBy->setUid($row->updatedby_uid);
     $updatedBy->setUsername($row->updatedby);
-    $magazineDTO->setUpdatedBy($updatedBy);
+    $multimediaDTO->setUpdatedBy($updatedBy);
 
-    $magazineDTO->setUpdatedOn($row->updatedon);
+    $multimediaDTO->setUpdatedOn($row->updatedon);
 
-    return $magazineDTO;
+    return $multimediaDTO;
   }
-
 }

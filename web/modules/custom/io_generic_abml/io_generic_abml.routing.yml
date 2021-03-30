@@ -58,7 +58,7 @@ io_generic_abml.author.delete.modal.form:
     js: 'nojs|ajax'
 
 
-# Books routes ########################################################################
+# Articles routes ########################################################################
 io_generic_abml.articles.list:
   path: '/articles/list'
   defaults:
@@ -66,3 +66,28 @@ io_generic_abml.articles.list:
     _title: 'Gestion de Catalogos'
   requirements:
     _permission: 'list articles'
+
+io_generic_abml.articles.add:
+  path: '/articles/add'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Articles\ArticleForm'
+    _title: 'Alta de Articulos'
+  requirements:
+    _permission: 'add article'
+
+# Articles routes ########################################################################
+io_generic_abml.articles.instance.list:
+  path: '/articles/instances/{articleId}'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\ArticlesController::listInstances'
+    _title: 'Gestion de Instancias'
+  requirements:
+    _permission: 'list articles'
+
+io_generic_abml.test.form:
+  path: '/test/jpform1'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\JpForm1'
+    _title: 'JP Form 1'
+  requirements:
+    _permission: 'access content'

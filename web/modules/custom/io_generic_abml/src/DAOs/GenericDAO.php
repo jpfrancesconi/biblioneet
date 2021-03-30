@@ -76,14 +76,14 @@ class GenericDAO {
    *  FALSE if need only the non active records
    *  NULL if need all records
    */
-  public static function getList($table_name, $activo = NULL) {
+  public static function getList($table_name, $status = NULL) {
     $query = \Drupal::database()->select($table_name, $table_name)
       ->fields($table_name);
       // Add the audit fields to the query.
     $query =  self::addAuditFields($query, $table_name);
     // If $activo is not null, add the condition to filter by activo
-    if(!is_null($activo)) {
-      $query->condition($table_name. '.status', $activo, '=');
+    if(!is_null($status)) {
+      $query->condition($table_name. '.status', $status, '=');
     }
 
     // Query execution.
@@ -105,9 +105,10 @@ class GenericDAO {
    *  NULL if need all records
    * @return array
    */
-  public static function getListSelectFormat($table_name, $description_field, $activo = NULL) {
-    $result = self::getList($table_name, $activo);
+  public static function getListSelectFormat($table_name, $description_field, $status = NULL) {
+    $result = self::getList($table_name, $status);
     $select_options = [];
+    $select_options[0] = 'Seleccione una opción';
     foreach($result as $key => $row) {
       $select_options[$row->id] = $row->{$description_field};
     }
