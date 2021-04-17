@@ -42,7 +42,7 @@ class ArticleDAO extends GenericDAO {
    */
   public static function getAll($search_article = NULL, $search_article_type = NULL, $limit = NULL) {
     if (!isset($limit))
-      $limit = 20;
+      $limit = 10;
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
       ->fields(self::TABLE_ALIAS, [
         'id', 'title', 'cover', 'inv_code', 'createdon', 'updatedon'

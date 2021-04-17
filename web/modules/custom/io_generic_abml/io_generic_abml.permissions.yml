@@ -31,3 +31,9 @@ list articles:
   description: 'View, add, edit and delete articles records'
   restrict access: true
   warning: 'Please take care with this permission.'
+
+add article:
+  title: 'Add new Articles records'
+  description: 'Add new articles records'
+  restrict access: true
+  warning: 'Please take care with this permission.'

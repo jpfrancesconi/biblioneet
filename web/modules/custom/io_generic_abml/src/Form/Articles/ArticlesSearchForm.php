@@ -32,7 +32,7 @@ class ArticlesSearchForm implements FormInterface {
       '#title' => 'FILTROS',
       '#options' => [
         0 => 'TODOS',
-        1 => 'TÌTULO',
+        1 => 'TÍTULO',
         2 => 'AUTOR',
         3 => 'MATERIA',
         4 => 'ISBN',
