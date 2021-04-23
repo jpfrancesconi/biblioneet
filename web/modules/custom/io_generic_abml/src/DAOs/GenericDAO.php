@@ -105,10 +105,10 @@ class GenericDAO {
    *  NULL if need all records
    * @return array
    */
-  public static function getListSelectFormat($table_name, $description_field, $status = NULL) {
+  public static function getListSelectFormat($table_name, $description_field, $status = NULL, $opcion_vacia) {
     $result = self::getList($table_name, $status);
     $select_options = [];
-    $select_options[0] = 'Seleccione una opción';
+    $select_options[0] = $opcion_vacia;
     foreach($result as $key => $row) {
       $select_options[$row->id] = $row->{$description_field};
     }

@@ -200,8 +200,8 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Types in the select format
    */
-  public static function getArticlesTypesSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_article_type', 'type', $status);
+  public static function getArticlesTypesSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_article_type', 'type', $status, $opcion_vacia);
 
     return $select_options;
   }
@@ -209,8 +209,8 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Formats in the select format
    */
-  public static function getArticlesFormatsSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_article_format', 'format', $status);
+  public static function getArticlesFormatsSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_article_format', 'format', $status, $opcion_vacia);
 
     return $select_options;
   }
@@ -218,8 +218,8 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Formats in the select format
    */
-  public static function getEditorialesSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_editorial', 'editorial', $status);
+  public static function getEditorialesSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_editorial', 'editorial', $status, $opcion_vacia);
 
     return $select_options;
   }

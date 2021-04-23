@@ -111,7 +111,7 @@ class ArticleForm extends FormBase {
     ];
 
     // Field: bn_article.article_type_id
-    $articlesTypesOptions = ArticleDAO::getArticlesTypesSelectFormat(true);//[0=> 'LIBRO', 1=>'REVISTA'];
+    $articlesTypesOptions = ArticleDAO::getArticlesTypesSelectFormat(true, 'Seleccione un Tipo de Articulo');//[0=> 'LIBRO', 1=>'REVISTA'];
     $form['article_type_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Tipo de artículo'),
@@ -129,7 +129,7 @@ class ArticleForm extends FormBase {
     ];
 
     // Field: bn_article.article_format_id
-    $articlesFormatOptions = ArticleDAO::getArticlesFormatsSelectFormat(true);//[0 => 'FISICO', 1 => 'DIGITAL'];
+    $articlesFormatOptions = ArticleDAO::getArticlesFormatsSelectFormat(true, 'Seleccione un Formato de Articulo');//[0 => 'FISICO', 1 => 'DIGITAL'];
     $form['article_format_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Formato del artículo'),
@@ -181,7 +181,7 @@ class ArticleForm extends FormBase {
           // Gather the number of authors in the form already.
           $num_authors = $form_state->get('num_authors');
           // get authors
-          $authosFormatOptions = AuthorDAO::getAuthorsSelectFormat(true);
+          $authosFormatOptions = AuthorDAO::getAuthorsSelectFormat(true, 'Seleccione un Autor' );
           // We have to ensure that there is at least one author field.
           if ($num_authors === NULL) {
             $num_authors = $form_state->set('num_authors', 1);
@@ -230,7 +230,7 @@ class ArticleForm extends FormBase {
           //Authors block END **********************************************************
 
           // Editorial Field
-          $editorialesFormatOptions = ArticleDAO::getEditorialesSelectFormat(true);
+          $editorialesFormatOptions = ArticleDAO::getEditorialesSelectFormat(true, 'Seleccione una editorial');
           $form['type_form_container']['type_form_fieldset']['editorial_id'] = [
             '#type' => 'select',
             '#title' => $this->t('Editorial'),

@@ -215,7 +215,7 @@ class AuthorDAO extends GenericDAO {
     $result = $query->execute()->fetchAll();
 
     $select_options = [];
-    $select_options[0] = 'Seleccione una opción';
+    $select_options[0] = 'Seleccione un Autor';
     foreach($result as $key => $row) {
       $select_options[$row->id] = $row->first_name.', '.$row->last_name;
     }
