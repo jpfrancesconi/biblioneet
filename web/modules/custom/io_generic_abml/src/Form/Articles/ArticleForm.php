@@ -5,12 +5,14 @@ use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Url;
 
 use Drupal\file\Entity\File;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\io_generic_abml\DAOs\ArticleDAO;
+use Drupal\io_generic_abml\DAOs\AuthorDAO;
 use Drupal\io_generic_abml\DAOs\BookDAO;
 use Drupal\io_generic_abml\DAOs\MagazineDAO;
 use Drupal\io_generic_abml\DAOs\MultimediaDAO;
@@ -174,6 +176,59 @@ class ArticleForm extends FormBase {
               'placeholder' => $this->t('ISBN'),
             ],
           ];
+
+          //Authors block BEGIN **********************************************************
+          // Gather the number of authors in the form already.
+          $num_authors = $form_state->get('num_authors');
+          // get authors
+          $authosFormatOptions = AuthorDAO::getAuthorsSelectFormat(true);
+          // We have to ensure that there is at least one author field.
+          if ($num_authors === NULL) {
+            $num_authors = $form_state->set('num_authors', 1);
+            $num_authors = 1;
+          }
+
+          $form['#tree'] = TRUE;
+          $form['type_form_container']['type_form_fieldset']['authors_fieldset'] = [
+            '#type' => 'details',
+            '#open' => TRUE,
+            '#title' => $this->t('Listado de autores del articulo'),
+            '#prefix' => '<div id="authors-fieldset-wrapper">',
+            '#suffix' => '</div>',
+          ];
+
+          for ($i = 0; $i < $num_authors; $i++) {
+            $form['type_form_container']['type_form_fieldset']['authors_fieldset']['author'][$i] = [
+              '#type' => 'select',
+              '#default_value' => '',
+              '#options' => $authosFormatOptions,
+            ];
+          }
+
+          $form['type_form_container']['type_form_fieldset']['authors_fieldset']['actions']['add_author'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Agregar otro autor'),
+            //'#submit' => [$this, 'addAuthor'],
+            '#ajax' => [
+              'callback' => '::addmoreCallback',
+              'wrapper' => 'authors-fieldset-wrapper',
+            ],
+          ];
+          // If there is more than one author, add the remove button.
+          if ($num_authors > 1) {
+            $form['type_form_container']['type_form_fieldset']['authors_fieldset']['actions']['remove_author'] = [
+              '#type' => 'submit',
+              '#value' => $this->t('Remover autor'),
+              //'#submit' => ['::removeCallback'],
+              '#ajax' => [
+                'callback' => '::addmoreCallback',
+                'wrapper' => 'authors-fieldset-wrapper',
+              ],
+            ];
+          }
+
+          //Authors block END **********************************************************
+
           // Editorial Field
           $editorialesFormatOptions = ArticleDAO::getEditorialesSelectFormat(true);
           $form['type_form_container']['type_form_fieldset']['editorial_id'] = [
@@ -271,9 +326,12 @@ class ArticleForm extends FormBase {
     ];
     // If all required fields are not completed we can't submit the form yet.
     //$form['actions']['submit']['#disabled'] = TRUE;
+    
     $form['actions']['cancel'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('CANCELAR'),
+      '#type' => 'link',
+      '#title' => 'CANCELAR',
+      '#attributes' => ['class' => ['btn', 'btn-danger']],
+      '#url' => Url::fromRoute('io_generic_abml.articles.list'),
     ];
 
     return $form;
@@ -288,10 +346,17 @@ class ArticleForm extends FormBase {
    *   Object describing the current state of the form.
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $title = $form_state->getValue('title');
-    if (strlen($title) < 5 || strlen($title) > 150) {
+    $formValues = $form_state->getValues();
+    
+    if (strlen($formValues['title']) < 5 || strlen($formValues['title']) > 150) {
       // Set an error for the form element with a key of "title".
       $form_state->setErrorByName('title', $this->t('El tìtulo debe contener al menos dos caracteres y como maximo 150 caracteres.'));
+    }
+    if($formValues['article_type_id'] === "0") {
+      $form_state->setErrorByName('article_type_id', $this->t('Debe seleccionar un tipo de articulo.'));
+    }
+    if($formValues['article_format_id'] === "0") {
+      $form_state->setErrorByName('article_format_id', $this->t('Debe seleccionar un formato de articulo.'));
     }
   }
 
@@ -378,6 +443,16 @@ class ArticleForm extends FormBase {
 
       $this->messenger()->addStatus($this->t('El artìculo %title fue creado satisfactoriamente.', ['%title' => $title]));
     } else {
+      if ($trigger == 'Agregar otro autor') {
+        $name_field = $form_state->get('num_authors');
+        $add_button = $name_field + 1;
+        $form_state->set('num_authors', $add_button);
+      }
+      if ($trigger == 'Remover autor') {
+        $name_field = $form_state->get('num_authors');
+        $less_button = $name_field - 1;
+        $form_state->set('num_authors', $less_button);
+      }
         // Rebuild the form. This causes buildForm() to be called again before the
         // associated Ajax callback. Allowing the logic in buildForm() to execute
         // and update the $form array so that it reflects the current state of
@@ -404,6 +479,15 @@ class ArticleForm extends FormBase {
    */
   public function getTypeFormCallback(array $form, FormStateInterface $form_state) {
     return $form['type_form_container'];
+  }
+
+  /**
+   * Callback for both ajax-enabled buttons.
+   *
+   * Selects and returns the fieldset with the names in it.
+   */
+  public function addmoreCallback(array &$form, FormStateInterface $form_state) {
+    return $form['type_form_container']['type_form_fieldset']['authors_fieldset'];
   }
 }
 

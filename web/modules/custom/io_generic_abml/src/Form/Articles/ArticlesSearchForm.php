@@ -29,7 +29,11 @@ class ArticlesSearchForm implements FormInterface {
     // The status messages that will contain any form errors.
     $form['search_article_type'] = [
       '#type' => 'select',
-      '#title' => 'FILTROS',
+      //'#title' => 'FILTROS',
+      '#prefix' => '<div class="input-group">',
+      '#attributes' => [
+        'class' => ['form-control'],
+      ],
       '#options' => [
         0 => 'TODOS',
         1 => 'TÍTULO',
@@ -43,7 +47,9 @@ class ArticlesSearchForm implements FormInterface {
       '#type' => 'search',
       '#attributes' => [
         'placeholder' => 'Ingrese alguna palabra',
+        'class' => ['form-control'],
       ],
+      '#suffix' => '</div>',
       '#default_value' => $_GET['search_article'] ?? '',
     ];
 
@@ -60,12 +66,12 @@ class ArticlesSearchForm implements FormInterface {
         ],
       ],
     ];
-    $form['actions']['cancel'] = [
-      '#type' => 'link',
-      '#title' => 'Limpiar',
-      '#attributes' => ['class' => ['button', 'form-actions']],
-      '#url' => Url::fromRoute('io_generic_abml.articles.list'),
-    ];
+    // $form['actions']['cancel'] = [
+    //   '#type' => 'link',
+    //   '#title' => 'Limpiar',
+    //   '#attributes' => ['class' => ['button', 'form-actions']],
+    //   '#url' => Url::fromRoute('io_generic_abml.articles.list'),
+    // ];
     $form['actions']['new_article'] = [
       '#type' => 'link',
       '#title' => 'Nuevo Artículo',
