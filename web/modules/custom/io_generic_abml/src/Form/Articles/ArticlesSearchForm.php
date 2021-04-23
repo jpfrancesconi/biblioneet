@@ -41,6 +41,9 @@ class ArticlesSearchForm implements FormInterface {
     ];
     $form['search_article'] = [
       '#type' => 'search',
+      '#attributes' => [
+        'placeholder' => 'Ingrese alguna palabra',
+      ],
       '#default_value' => $_GET['search_article'] ?? '',
     ];
 
@@ -62,6 +65,12 @@ class ArticlesSearchForm implements FormInterface {
       '#title' => 'Limpiar',
       '#attributes' => ['class' => ['button', 'form-actions']],
       '#url' => Url::fromRoute('io_generic_abml.articles.list'),
+    ];
+    $form['actions']['new_article'] = [
+      '#type' => 'link',
+      '#title' => 'Nuevo Artículo',
+      '#attributes' => ['class' => ['btn', 'btn-primary']],
+      '#url' => Url::fromRoute('io_generic_abml.articles.add'),
     ];
     return $form;
   }

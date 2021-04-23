@@ -71,7 +71,9 @@ class AuthorsController extends GenericABMLController {
       $authorDTO = AuthorDAO::load($author);
 
 
-      $pic = File::load($authorDTO->getPicture());
+      $pic = $authorDTO->getPicture();
+      if(isset($pic))
+        $pic = File::load($authorDTO->getPicture());
       if ($pic) {
         $pic_url = file_create_url($pic->getFileUri());
       } else {

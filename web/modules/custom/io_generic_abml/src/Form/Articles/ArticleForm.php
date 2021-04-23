@@ -101,7 +101,7 @@ class ArticleForm extends FormBase {
       '#multiple'           => FALSE,
       '#upload_validators'  => [
         'file_validate_extensions'  => ['png gif jpg jpeg jfif'],
-        'file_validate_size'        => [25600000],
+        'file_validate_size'        => [51200000],
         //'file_validate_image_resolution' => array('800x600', '400x300'),.
       ],
       '#title'              => $this->t('Foto o Imagen del artículo'),

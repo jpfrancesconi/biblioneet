@@ -76,7 +76,7 @@ class AuthorForm extends FormBase implements FormInterface {
     // Subtitle
     $form['subtitle'] = [
       '#type'   => 'item',
-      '#title'  => t('Desde esta ventana podrá dar de alta nuevos autores para que sean luego asociados a libros u otros materiales.'),
+      '#title'  => t('Desde esta ventana podrá dar de alta o editar autores para que sean luego asociados a libros u otros materiales.'),
     ];
 
     $form['first_name'] = [
@@ -122,7 +122,7 @@ class AuthorForm extends FormBase implements FormInterface {
         //'file_validate_image_resolution' => array('800x600', '400x300'),.
       ],
       '#title'              => t('Foto o Imagen del autor'),
-      '#default_value'      => ($authorDTO) ? [$authorDTO->getPicture()] : '',
+      '#default_value'      => ($authorDTO->getPicture()) ? [$authorDTO->getPicture()] : '',
     ];
 
     $form['status'] = [

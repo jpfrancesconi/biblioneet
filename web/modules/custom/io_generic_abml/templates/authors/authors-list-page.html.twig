@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <h1>Resultados</h1>
   {% if results %}
-  {{ kint(results|keys) }}
+  {# {{ kint(results|keys) }} #}
   <div class="container-fluid">
     <p>{{ results_counter }}</p>
 
@@ -9,7 +9,7 @@
 		    flex-wrap: wrap; justify-content: space-between;">
       {% for item in results %}
       <div class="card" style="width: 18rem; text-align: center;">
-        {{ kint(item) }}
+        {# {{ kint(item) }} #}
         <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="width: 100%; height: 200px; object-fit: cover;">
         <div class="card-body">
           <h5 class="card-title">{{ item.first_name }}, {{ item.last_name }}</h5>

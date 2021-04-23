@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid p-0">
   {{ search_form }}
   {% if results %}
   <h1>Listado de artículos encontrados</h1>
@@ -22,6 +22,14 @@
     </div>
   </div>
   {% else %}
-  <h1>No se han encontrado resultados para los filtros ingresados</h1>
+  <div class="container-fluid p-0 mt-1">
+    <div class="m-0 auto">
+    {% if results_counter == -1 %}
+      <h2>Ingrese algun filtro y presione BUSCAR</h2>
+    {% else %}
+      <h2>No se han encontrado resultados para los filtros ingresados</h2>
+    {% endif %}
+    </div>
+  </div>
   {% endif %}
 </div>

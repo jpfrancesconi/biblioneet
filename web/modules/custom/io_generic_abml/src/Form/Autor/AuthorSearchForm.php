@@ -31,6 +31,9 @@ class AuthorSearchForm implements FormInterface {
     // The status messages that will contain any form errors.
     $form['search'] = [
       '#type' => 'search',
+      '#attributes' => [
+        'placeholder' => 'Ingrese alguna palabra',
+      ],
       '#default_value' => $_GET['search'] ?? '',
     ];
 

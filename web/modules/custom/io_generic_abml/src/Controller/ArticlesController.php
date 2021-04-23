@@ -45,9 +45,10 @@ class ArticlesController extends GenericABMLController {
     // Declare array to contain all request results
     $rows = [];
     // Declare array to contain all request results counter
-    $rowsCounter = 0;
+    $rowsCounter = -1;
     // Check if users has typed something into search textbox field
     if(!empty($search_article)){
+      $rowsCounter = 0;
       // Get all articles by filters
       $articlesList = [];
       $articlesList = ArticleDAO::getAll($search_article, $search_article_type);

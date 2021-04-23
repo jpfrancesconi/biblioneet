@@ -59,9 +59,27 @@ class ArticleDAO extends GenericDAO {
     // Add the audit fields to the query.
     $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
 
-    // Now we hace to check if user has selected any filter: $search_article_type
+    // Now we have to check if user has selected any filter: $search_article_type
     if(isset($search_article_type)) {
       switch ($search_article_type) {
+        case '0':
+          # TODOS
+          // If $search_key is not null means that need to add the where condition.
+          if (!is_null($search_article)) {
+            // Add LEFT JOIN to bn_article_author table
+            $query->leftjoin('bn_article_author', 'art_aut', 'art_aut.article_id = ' . self::TABLE_ALIAS . '.id');
+            // Add LEFT JOIN to bn_book table
+            $query->leftjoin('bn_book', 'bk', 'bk.article_id = ' . self::TABLE_ALIAS . '.id');
+            // Add LEFT JOIN to bn_author table
+            $query->leftjoin('bn_author', 'aut', 'aut.id = art_aut.author_id');
+            $group = $query->orConditionGroup()
+              ->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_article) . "%", 'LIKE')
+              ->condition('aut.first_name', "%" . Html::escape($search_article) . "%", 'LIKE')
+              ->condition('aut.last_name', "%" . Html::escape($search_article) . "%", 'LIKE')
+              ->condition('bk.isbn', "%" . Html::escape($search_article) . "%", 'LIKE');
+            $query->condition($group);
+          }
+          break;
         case '1':
           # TITULO
           // If $search_key is not null means that need to add the where condition.
@@ -72,6 +90,16 @@ class ArticleDAO extends GenericDAO {
 
         case '2':
           # AUTOR
+          if (!is_null($search_article)) {
+            // Add LEFT JOIN to bn_article_author table
+            $query->leftjoin('bn_article_author', 'art_aut', 'art_aut.article_id = ' . self::TABLE_ALIAS . '.id');
+            // Add LEFT JOIN to bn_author table
+            $query->leftjoin('bn_author', 'aut', 'aut.id = art_aut.author_id');
+            $group = $query->orConditionGroup()
+            ->condition('aut.first_name', "%" . Html::escape($search_article) . "%", 'LIKE')
+            ->condition('aut.last_name', "%" . Html::escape($search_article) . "%", 'LIKE');
+            $query->condition($group);
+          }
           break;
 
         case '3':
