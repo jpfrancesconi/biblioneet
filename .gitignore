@@ -43,3 +43,6 @@ web/sites/default/settings/settings.local.php
 # simpletest
 /.vscode/
 /ver/
+
+web/themes/custom/bs4theme/node_modules/
+web/themes/custom/bs4theme/node_modules/*
