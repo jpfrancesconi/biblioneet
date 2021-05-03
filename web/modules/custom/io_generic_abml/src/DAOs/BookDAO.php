@@ -5,11 +5,13 @@ namespace Drupal\io_generic_abml\DAOs;
 use Drupal\Component\Utility\Html;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
+use Drupal\io_generic_abml\DAOs\ArticleDAO;
+use Drupal\io_generic_abml\DAOs\EditorialDAO;
+use Drupal\io_generic_abml\DAOs\AuthorDAO;
 
 use Drupal\io_generic_abml\DTOs\BookDTO;
 use Drupal\io_generic_abml\DTOs\EditorialDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
-
 
 /**
  * DAO class for book entity.
@@ -84,8 +86,71 @@ class BookDAO extends GenericDAO {
    * @param array $fields
    *   An array conating the book data in key value pair.
    */
-  public static function add(array $fields) {
-    return \Drupal::database()->insert(self::TABLE_NAME)->fields($fields)->execute();
+  public static function add(array $fieldsArticle, int $instances = null, int $cover_fid = null, array $authorsArticleList, array $fieldsEditorial, array $fieldsBook) {
+    // We open the transaction
+    $transaction = \Drupal::database()->startTransaction();
+
+    try {
+      // Create Article
+      // Check if we have to create instances
+      if(isset($instances) && $instances != 0) {
+        //Save the new article into DB
+        $idArticle = ArticleDAO::add($fieldsArticle, $instances);
+      } else {
+        //Save the new article into DB
+        $idArticle = ArticleDAO::add($fieldsArticle);
+      } 
+      $userId = $fieldsArticle['createdby'];
+      
+      // Editorial
+      // We need to create a new one?
+      if($fieldsEditorial[id] === -1) {
+        unset($fieldsEditorial['id']);
+        $newEditorialId = EditorialDAO::add($fieldsEditorial);
+        // Set new Editorial to book
+        $fieldsBook['editorial_id'] = $newEditorialId;
+      } else {
+        // Set new Editorial to book
+        $fieldsBook['editorial_id'] = $fieldsEditorial[id];
+      }
+      // Book
+      // Link article to book
+      $fieldsBook['article_id'] = $idArticle;
+      $idBook = \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsBook)->execute();
+
+      // Link the authors to recently created article
+      foreach ($authorsArticleList as $key => $author) {
+        // Check if we must create a new author
+        if($author->getId() === 0) {
+          $authorFields = [
+            'first_name' => $author->getFirstName(),
+            'last_name' => $author->getLastName(),
+            'status' => 1,
+            'createdBy' => $userId,
+            'createdOn' => date("Y-m-d h:m:s"),
+          ];
+          $idAuthor = AuthorDAO::add($authorFields);
+        } else {
+          $idAuthor = $author->getId();
+        }
+        
+        ArticleDAO::LinkAuthorToArticle($idArticle, $idAuthor, $userId);
+      }
+
+      return $idArticle;
+    }
+    catch (Exception $e) {
+      $transaction->rollBack();
+      watchdog_exception('io_generics_abml.add_article', $e);
+    }
+
+    // You can let $transaction go out of scope here and the transaction will 
+    // automatically be committed if it wasn't already rolled back.
+    // However, if you have more work to do, you will want to commit the transaction
+    // yourself, like this:
+    unset($transaction);
+    
+    //return \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsBook)->execute();
   }
 
   /**

@@ -476,7 +476,7 @@ class ArticleForm extends FormBase {
         $cover_fid = $image[0];
       }
 
-      $fields = [
+      $fieldsArticle = [
         'title' => trim(strtoupper($form_state->getValue('title'))),
         'cover' => $cover_fid,
         'inv_code' => trim($form_state->getValue('inv_code')),
@@ -487,14 +487,7 @@ class ArticleForm extends FormBase {
 
       // Check if we have to create instances
       $instances = $form_state->getValue('instances');
-      if($instances != 0) {
-        //Save the new article into DB
-        $new_record_id = 1;//ArticleDAO::add($fields, $instances);
-      } else {
-        //Save the new article into DB
-        $new_record_id = 1;//ArticleDAO::add($fields);
-      }
-
+      
       if ($cover_fid) {
         $file = File::load($cover_fid);
         $file->setPermanent();
@@ -505,31 +498,36 @@ class ArticleForm extends FormBase {
         case '1':
           // Book case
           // Autors
-
+          $authorsBookList = $form_state->get('authors_selected_list');
           // Editoral
           // Check if we have to create a new one
           if($form_state->getUserInput()['editorial_id'] === '-1') {
             // Create a new Editorial
-            $fields_editorial = [
+            $fieldsEditorial = [
+              'id' => -1,
               'editorial' => $form_state->getUserInput()['type_form_container']['type_form_fieldset']['new_editorial'],
               'status' => 1,
               'createdby' => $user->id(),
               'createdon' => date("Y-m-d h:m:s"),
             ];
-            //$new_editorial_id = EditorialDAO::add($fields_editorial);
+          } else {
+            // Create a new Editorial
+            $fieldsEditorial = [
+              'id' => $form_state->getUserInput()['editorial_id'],              
+            ];  
           }
 
-          $extraFields = [
-            'isbn' => trim(strtoupper($form_state->getValue('isbn'))),
-            'editorial_id' => $form_state->getValue('editorial_id'),
-            'anio_edicion' => $form_state->getValue('anio_edicion'),
-            'cant_paginas' => $form_state->getValue('cant_paginas'),
-            'idioma' => $form_state->getValue('idioma'),
-            'article_id' => $new_record_id,
+          $fieldsBook = [
+            'isbn' => trim(strtoupper($form_state->getUserInput()['type_form_container']['type_form_fieldset']['isbn'])),
+            'editorial_id' => $form_state->getUserInput()['type_form_container']['type_form_fieldset']['editorial_id'],
+            'anio_edicion' => $form_state->getUserInput()['type_form_container']['type_form_fieldset']['anio_edicion'],
+            'cant_paginas' => $form_state->getUserInput()['type_form_container']['type_form_fieldset']['cant_paginas'],
+            'idioma' => $form_state->getUserInput()['type_form_container']['type_form_fieldset']['idioma'],
+            'article_id' => 0,//$new_record_id,
             'createdby' => $user->id(),
             'createdon' => date("Y-m-d h:m:s"),
           ];
-          BookDAO::add($extraFields);
+          BookDAO::add($fieldsArticle, $instances, $cover_fid, $authorsBookList, $fieldsEditorial, $fieldsBook);
           break;
         case '2':
           // Magazine case

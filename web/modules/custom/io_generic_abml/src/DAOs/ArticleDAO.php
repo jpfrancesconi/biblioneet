@@ -235,6 +235,23 @@ class ArticleDAO extends GenericDAO {
     }
     return $select_options;
   }
+
+  /**
+   * To insert a new record into DB.
+   *
+   * @param array $fields
+   *   An array conating the bn_article_author data in key value pair.
+   */
+  public static function LinkAuthorToArticle(int $idArticle, int $idAuthor, int $userId ) {
+    $fields = [
+      'article_id' => $idArticle,
+      'author_id' => $idAuthor,
+      'createdby' => $userId,
+      'createdOn' => date("Y-m-d h:m:s"),
+    ];
+    return \Drupal::database()->insert('bn_article_author')->fields($fields)->execute();
+  }
+
   /** Utis methods *********************************************************************************/
   /**
    * Create a ArticleDTO from stdClass from DB Record
