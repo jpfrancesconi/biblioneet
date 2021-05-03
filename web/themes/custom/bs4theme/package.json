@@ -1,0 +1,27 @@
+{
+  "name": "bs4theme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "bootstrap": "^4.6.0",
+    "browser-sync": "^2.26.14",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-connect-php": "^1.0.3",
+    "gulp": "^4.0.2",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-install": "^1.1.0",
+    "gulp-livereload": "^4.0.2",
+    "gulp-pngquant": "^1.0.13",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglifyjs": "^0.6.2",
+    "gulp-sass": "^4.1.0",
+    "node-sass": "^4.14.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jpfrancesconi",
+  "license": "ISC"
+}

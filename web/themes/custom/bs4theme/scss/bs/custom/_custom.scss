@@ -1,13 +1,16 @@
 // Header
 @import 'layout/header';
+// Main content
+@import 'layout/content';
 // Main front page
 @import 'pages/frontpage';
 
 // Pages *******************************************************************************
 // Authors *****************
 // List
-@import 'pages/authors/list'
+@import 'pages/authors/list';
 
 
-// Books *****************
-// List
+// Articles *****************
+// Forms
+@import 'pages/articles/form_search';

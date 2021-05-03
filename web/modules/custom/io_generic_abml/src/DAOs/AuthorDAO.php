@@ -205,6 +205,26 @@ class AuthorDAO extends GenericDAO {
     return self::update($id, ['status' => ($status) ? 1 : 0]);
   }
 
+  /**
+   * Get the list of Authors in the select format
+   */
+  public static function getAuthorsSelectFormat($newOption = false, $emptyOption = 'Seleccione una opcion') {
+    $query = \Drupal::database()->select('bn_author', 'a')
+      ->fields('a', ['id', 'first_name', 'last_name']);
+    // Query execution.
+    $result = $query->execute()->fetchAll();
+
+    $select_options = [];
+    //$select_options[0] = 'Seleccione un Autor';
+    if($newOption)
+      $select_options[-1] = 'Crear nuevo Autor';
+    foreach($result as $key => $row) {
+      $select_options[$row->id] = $row->first_name.', '.$row->last_name;
+    }
+
+    return $select_options;
+  }
+
   /** Utis methods *********************************************************************************/
   /**
    * Create an AuthorDTO from stdClass from DB Record

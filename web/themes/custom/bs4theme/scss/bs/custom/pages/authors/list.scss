@@ -1,4 +1,4 @@
-body.path-authors {
+body.path-authors, body.path-articles {
   /* Nuevo autor Button */
   & .block-local-actions-block {
     & .nav-link {
@@ -21,7 +21,27 @@ body.path-authors {
       & .card {
         margin-top: 10px;
         margin-bottom: 10px;
+        cursor: pointer;
       }
     }
+  }
+
+  // Cards
+  & .card {
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    
+  }
+}
+
+#authors-fieldset-wrapper {
+  border: solid 1px grey;
+  padding: 5px;
+  & summary {
+    background: grey;
+    color: white;
+    margin-bottom: 5px;
   }
 }

@@ -122,7 +122,7 @@ class AuthorForm extends FormBase implements FormInterface {
         //'file_validate_image_resolution' => array('800x600', '400x300'),.
       ],
       '#title'              => t('Foto o Imagen del autor'),
-      '#default_value'      => ($authorDTO->getPicture()) ? [$authorDTO->getPicture()] : '',
+      '#default_value'      => ($authorDTO) ? [$authorDTO->getPicture()] : '',
     ];
 
     $form['status'] = [

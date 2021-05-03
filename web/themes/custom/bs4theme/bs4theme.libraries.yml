@@ -8,6 +8,8 @@ global-styling:
     component:
       css/style.css: {}
       #css/colors.css: {}
+    theme:
+      fontawesome/css/all.css: {}
 
 bootstrap:
   js:

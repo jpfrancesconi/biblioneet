@@ -1,0 +1,9 @@
+.articles-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+
+    & .input-group {
+        width: unset;
+    }
+}

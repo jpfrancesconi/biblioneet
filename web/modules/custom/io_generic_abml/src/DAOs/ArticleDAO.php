@@ -200,8 +200,8 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Types in the select format
    */
-  public static function getArticlesTypesSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_article_type', 'type', $status);
+  public static function getArticlesTypesSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_article_type', 'type', $status, $opcion_vacia);
 
     return $select_options;
   }
@@ -209,8 +209,8 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Formats in the select format
    */
-  public static function getArticlesFormatsSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_article_format', 'format', $status);
+  public static function getArticlesFormatsSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_article_format', 'format', $status, $opcion_vacia);
 
     return $select_options;
   }
@@ -218,9 +218,21 @@ class ArticleDAO extends GenericDAO {
   /**
    * Get the list of Article Formats in the select format
    */
-  public static function getEditorialesSelectFormat($status = NULL) {
-    $select_options = parent::getListSelectFormat('bn_editorial', 'editorial', $status);
+  public static function getEditorialesSelectFormat($newOption = false, $status = NULL, $opcion_vacia) {
+    $query = \Drupal::database()->select('bn_editorial', 'e')
+      ->fields('e', ['id', 'editorial', 'status']);
+    if(isset($status))
+      $query->condition('e.status', $status, '=');
+    // Query execution.
+    $result = $query->execute()->fetchAll();
 
+    $select_options = [];
+    //$select_options[0] = 'Seleccione un Autor';
+    if ($newOption)
+      $select_options[-1] = 'Crear nueva Editorial';
+    foreach ($result as $key => $row) {
+      $select_options[$row->id] = $row->editorial;
+    }
     return $select_options;
   }
   /** Utis methods *********************************************************************************/
