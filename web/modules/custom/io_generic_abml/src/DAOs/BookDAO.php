@@ -2,7 +2,10 @@
 
 namespace Drupal\io_generic_abml\DAOs;
 
+use Drupal;
 use Drupal\Component\Utility\Html;
+
+use Drupal\file\Entity\File;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
 use Drupal\io_generic_abml\DAOs\ArticleDAO;
@@ -102,16 +105,25 @@ class BookDAO extends GenericDAO {
       } 
       $userId = $fieldsArticle['createdby'];
       
+      //Save cover file
+      $file_usage = Drupal::service('file.usage');
+      if ($cover_fid) {
+        $file = File::load($cover_fid);
+        $file->setPermanent();
+        $file->save();
+        $file_usage->add($file, 'article', 'file', $idArticle);
+      }
+
       // Editorial
       // We need to create a new one?
-      if($fieldsEditorial[id] === -1) {
+      if($fieldsEditorial['id'] === -1) {
         unset($fieldsEditorial['id']);
         $newEditorialId = EditorialDAO::add($fieldsEditorial);
         // Set new Editorial to book
         $fieldsBook['editorial_id'] = $newEditorialId;
       } else {
         // Set new Editorial to book
-        $fieldsBook['editorial_id'] = $fieldsEditorial[id];
+        $fieldsBook['editorial_id'] = $fieldsEditorial['id'];
       }
       // Book
       // Link article to book

@@ -469,11 +469,10 @@ class ArticleForm extends FormBase {
       $user = \Drupal::currentUser();
 
       // Cover image
-      $file_usage = Drupal::service('file.usage');
       $cover_fid = NULL;
-      $image = $form_state->getValue('cover');
+      $image = $form_state->getUserInput()['cover'];//$form_state->getValue('cover');
       if (!empty($image)) {
-        $cover_fid = $image[0];
+        $cover_fid = $image['fids'];
       }
 
       $fieldsArticle = [
@@ -488,12 +487,6 @@ class ArticleForm extends FormBase {
       // Check if we have to create instances
       $instances = $form_state->getValue('instances');
       
-      if ($cover_fid) {
-        $file = File::load($cover_fid);
-        $file->setPermanent();
-        $file->save();
-        $file_usage->add($file, 'article', 'file', $new_record_id);
-      }
       switch ($form_state->getValue('article_type_id')) {
         case '1':
           // Book case
