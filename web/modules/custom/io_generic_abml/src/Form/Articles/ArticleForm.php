@@ -469,10 +469,12 @@ class ArticleForm extends FormBase {
       $user = \Drupal::currentUser();
 
       // Cover image
-      $cover_fid = NULL;
-      $image = $form_state->getUserInput()['cover'];//$form_state->getValue('cover');
-      if (!empty($image)) {
+      $image = $form_state->getUserInput()['cover'];
+
+      if (!empty($image) && $image['fids'] !== "") {
         $cover_fid = $image['fids'];
+      } else {
+        $cover_fid = null;
       }
 
       $fieldsArticle = [
