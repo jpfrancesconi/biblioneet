@@ -23,7 +23,7 @@ class EditorialDTO extends GenericDTO {
    *
    * @var Boolean
    */
-  protected $activo;
+  protected $status;
 
   public function setId($id) {
     $this->id = $id;
@@ -41,19 +41,19 @@ class EditorialDTO extends GenericDTO {
   /**
    * Get estado
    */
-  public function getActivo() {
-    return $this->activo;
+  public function getStatus() {
+    return $this->status;
   }
   /**
    * Set estado
    */
-  public function setActivo($activo) {
-    $this->activo = $activo;
+  public function setStatus($status) {
+    $this->status = $status;
   }
   /**
    * Get estado to show to the user
    */
-  public function getActivoString() {
+  public function getStatusString() {
     if ($this->activo) {
       return t('SI');
     }

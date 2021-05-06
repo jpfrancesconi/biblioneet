@@ -37,3 +37,16 @@ add article:
   description: 'Add new articles records'
   restrict access: true
   warning: 'Please take care with this permission.'
+
+# BEGIN: ABML Items ###########################################################################
+list items:
+  title: 'Manage Items records'
+  description: 'View, add, edit and delete items records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+add item:
+  title: 'Add new Item records'
+  description: 'Add new items records'
+  restrict access: true
+  warning: 'Please take care with this permission.'

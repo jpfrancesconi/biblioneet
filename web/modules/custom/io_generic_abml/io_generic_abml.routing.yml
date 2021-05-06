@@ -84,6 +84,24 @@ io_generic_abml.articles.instance.list:
   requirements:
     _permission: 'list articles'
 
+# Items routes ########################################################################
+io_generic_abml.items.list:
+  path: '/items/list'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\ItemsController::listItems'
+    _title: 'Gestion de Catalogos'
+  requirements:
+    _permission: 'list items'
+
+io_generic_abml.items.add:
+  path: '/items/add'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Items\ItemForm'
+    _title: 'Alta de items'
+  requirements:
+    _permission: 'add item'
+
+
 io_generic_abml.test.form:
   path: '/test/jpform1'
   defaults:

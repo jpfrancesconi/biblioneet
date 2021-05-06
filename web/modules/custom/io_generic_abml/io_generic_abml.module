@@ -35,6 +35,15 @@ function io_generic_abml_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'articles/articles-list-page',
     ],
+    'items_list_page' => [
+      'variables' => [
+        'search_form' => null,
+        'results' => [],
+        'results_counter' => null,
+        'pager' => null,
+      ],
+      'template' => 'items/items-list-page',
+    ],
   ];
   return $templates;
 }
