@@ -2,6 +2,7 @@
 
 namespace Drupal\io_generic_abml\DAOs;
 
+use Drupal;
 use Drupal\Component\Utility\Html;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
@@ -229,6 +230,82 @@ class ItemDAO extends GenericDAO {
   }
 
   /**
+   * To insert a new record into DB.
+   *
+   * @param array $fields
+   *   An array conating the book data in key value pair.
+   */
+  public static function add(array $fieldsItem, 
+    int $cover_fid = null, 
+    array $authorsItemsList, 
+    array $fieldsEditorial) {
+
+    // We open the transaction
+    $transaction = \Drupal::database()->startTransaction();
+
+    try {
+      // Editorial
+      // We need to create a new one?
+      if($fieldsEditorial['id'] === -1) {
+        unset($fieldsEditorial['id']);
+        $newEditorialId = EditorialDAO::add($fieldsEditorial);
+        // Set new Editorial to item
+        $fieldsItem['editorial_id'] = $newEditorialId;
+      } else {
+        // Set new Editorial to item
+        $fieldsItem['editorial_id'] = $fieldsEditorial['id'];
+      }
+
+      // Create Item
+      $idNewItem = \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsItem)->execute();
+        
+      $userId = $fieldsArticle['createdby'];
+      
+      //Save cover file
+      $file_usage = Drupal::service('file.usage');
+      if ($cover_fid) {
+        $file = File::load($cover_fid);
+        $file->setPermanent();
+        $file->save();
+        $file_usage->add($file, 'article', 'file', $idNewItem);
+      }
+
+      // Link the authors to recently created article
+      foreach ($authorsItemsList as $key => $author) {
+        // Check if we must create a new author
+        if($author->getId() === 0) {
+          $authorFields = [
+            'first_name' => $author->getFirstName(),
+            'last_name' => $author->getLastName(),
+            'status' => 1,
+            'createdBy' => $userId,
+            'createdOn' => date("Y-m-d h:m:s"),
+          ];
+          $idAuthor = AuthorDAO::add($authorFields);
+        } else {
+          $idAuthor = $author->getId();
+        }
+        
+        Self::LinkAuthorToItem($idNewItem, $idAuthor, $userId);
+      }
+
+      return $idArticle;
+    }
+    catch (Exception $e) {
+      $transaction->rollBack();
+      watchdog_exception('io_generics_abml.add_article', $e);
+    }
+
+    // You can let $transaction go out of scope here and the transaction will 
+    // automatically be committed if it wasn't already rolled back.
+    // However, if you have more work to do, you will want to commit the transaction
+    // yourself, like this:
+    unset($transaction);
+    
+    //return \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsBook)->execute();
+  }
+
+  /**
    * Get the list of Items Types in the select format
    */
   public static function getItemsTypesSelectFormat($status = NULL, $opcion_vacia) {
@@ -282,9 +359,9 @@ class ItemDAO extends GenericDAO {
    * @param array $fields
    *   An array conating the bn_item_author data in key value pair.
    */
-  public static function LinkAuthorToArticle(int $idArticle, int $idAuthor, int $userId ) {
+  public static function LinkAuthorToItem(int $idNewItem, int $idAuthor, int $userId ) {
     $fields = [
-      'article_id' => $idArticle,
+      'item_id' => $idNewItem,
       'author_id' => $idAuthor,
       'createdby' => $userId,
       'createdOn' => date("Y-m-d h:m:s"),

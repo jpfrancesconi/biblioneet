@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Url;
 use Drupal\Component\Render\FormattableMarkup;
-
 use Drupal\file\Entity\File;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -523,12 +522,52 @@ class ItemForm extends FormBase {
         $cover_fid = null;
       }
 
+      // Autors
+      $authorsItemsList = $form_state->get('authors_selected_list');
+
+      // Editoral
+      // Check if we have to create a new one
+      if($form_state->getUserInput()['area_4']['editorial_id'] === '-1') {
+        // Create a new Editorial
+        $fieldsEditorial = [
+          'id' => -1,
+          'editorial' => $form_state->getUserInput()['area_4']['new_editorial'],
+          'status' => 1,
+          'createdby' => $user->id(),
+          'createdon' => date("Y-m-d h:m:s"),
+        ];
+      } else {
+        // Create a new Editorial
+        $fieldsEditorial = [
+          'id' => $form_state->getUserInput()['editorial_id'],              
+        ];  
+      }
+
       $fieldsItem = [
         'title' => trim(strtoupper($form_state->getUserInput()['area_1']['title'])),
-        'cover' => $cover_fid,
         'item_type_id' => $form_state->getUserInput()['area_1']['item_type_id'],
+        'parallel_title' => trim(strtoupper($form_state->getUserInput()['area_1']['parallel_title'])),
+        'edition' => trim(strtoupper($form_state->getUserInput()['area_2']['edition'])),
+        'publication_place' => trim(strtoupper($form_state->getUserInput()['area_4']['publication_place'])),
+        'editorial_id' => null,
+        'publication_year' => trim(strtoupper($form_state->getUserInput()['area_4']['publication_year'])),
+        'extension' => trim(strtoupper($form_state->getUserInput()['area_5']['extension'])),
+        'dimensions' => trim(strtoupper($form_state->getUserInput()['area_5']['dimensions'])),
+        'others_physical_details' => trim(strtoupper($form_state->getUserInput()['area_5']['others_physical_details'])),
+        'complements' => trim(strtoupper($form_state->getUserInput()['area_5']['complements'])),
+        'serie_title' => trim(strtoupper($form_state->getUserInput()['area_6']['serie_title'])),
+        'serie_number' => trim(strtoupper($form_state->getUserInput()['area_6']['serie_number'])),
+        'notes' => trim(strtoupper($form_state->getUserInput()['area_7']['notes'])),
+        'isbn' => trim(strtoupper($form_state->getUserInput()['area_8']['isbn'])),
+        'issn' => trim(strtoupper($form_state->getUserInput()['area_8']['issn'])),
+        'acquisition_condition_id' => $form_state->getUserInput()['area_8']['acquisition_condition_id'],
+        'acquisition_condition_notes' => trim(strtoupper($form_state->getUserInput()['area_8']['acquisition_condition_notes'])),
+        'cover' => $cover_fid,
         'createdby' => $user->id(),
       ];
+
+      ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial);
+      $this->messenger()->addStatus($this->t('El item %title fue creado satisfactoriamente.', ['%title' => $title]));
 
     } else { //Ajax callbacks reactions
       if ($trigger == 'Agregar autor') {
