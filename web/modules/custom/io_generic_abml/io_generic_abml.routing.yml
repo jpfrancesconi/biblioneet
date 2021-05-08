@@ -101,6 +101,18 @@ io_generic_abml.items.add:
   requirements:
     _permission: 'add item'
 
+io_generic_abml.items.edit:
+  path: '/items/{id}/edit'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Items\ItemForm'
+    _title: 'Editar Ítem'
+  requirements:
+    _permission: 'edit item'
+  options:
+    parameters:
+      id:
+        type: int
+
 
 io_generic_abml.test.form:
   path: '/test/jpform1'

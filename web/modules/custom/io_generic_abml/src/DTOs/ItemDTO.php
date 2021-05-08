@@ -206,7 +206,7 @@ class ItemDTO extends GenericDTO {
     $this->editorial = $editorial;
   }
   public function getEditorial() {
-    return $this->paraeditorialllelTitle;
+    return $this->editorial;
   }
 
   public function setPublicationYear($publicationYear) {

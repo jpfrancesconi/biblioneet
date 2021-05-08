@@ -50,3 +50,8 @@ add item:
   description: 'Add new items records'
   restrict access: true
   warning: 'Please take care with this permission.'
+
+  edit item:
+  title: 'Edit item'
+  description: 'Edit an item'
+  restrict access: true

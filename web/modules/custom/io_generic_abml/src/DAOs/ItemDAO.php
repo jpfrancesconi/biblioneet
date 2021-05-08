@@ -4,6 +4,7 @@ namespace Drupal\io_generic_abml\DAOs;
 
 use Drupal;
 use Drupal\Component\Utility\Html;
+use Drupal\file\Entity\File;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
 use Drupal\io_generic_abml\DAOs\InstanceDAO;
@@ -78,7 +79,7 @@ class ItemDAO extends GenericDAO {
     $query->fields('ed', ['id', 'editorial', 'status']);
 
     // Add join to bn_acquisition_condition table
-    $query->join('bn_acquisition_condition', 'aci', 'ac.id = ' . self::TABLE_ALIAS . '.acquisition_condition_id');
+    $query->join('bn_acquisition_condition', 'aci', 'aci.id = ' . self::TABLE_ALIAS . '.acquisition_condition_id');
     $query->fields('aci', ['id', 'condition', 'status']);
 
     // Add the audit fields to the query.
@@ -92,7 +93,7 @@ class ItemDAO extends GenericDAO {
           // If $search_key is not null means that need to add the where condition.
           if (!is_null($search_item)) {
             // Add LEFT JOIN to bn_item_author table
-            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.article_id = ' . self::TABLE_ALIAS . '.id');
+            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
             // Add LEFT JOIN to bn_author table
             $query->leftjoin('bn_author', 'aut', 'aut.id = ite_aut.author_id');
             $group = $query->orConditionGroup()
@@ -118,7 +119,7 @@ class ItemDAO extends GenericDAO {
           # AUTOR
           if (!is_null($search_item)) {
             // Add LEFT JOIN to bn_item_author table
-            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.article_id = ' . self::TABLE_ALIAS . '.id');
+            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
             // Add LEFT JOIN to bn_author table
             $query->leftjoin('bn_author', 'aut', 'aut.id = ite_aut.author_id');
             $group = $query->orConditionGroup()
@@ -134,9 +135,9 @@ class ItemDAO extends GenericDAO {
 
         case '4':
           # ISBN
-          // Add join to bn_book table
-          $query->leftjoin('bn_book', 'bk', 'bk.article_id = ' . self::TABLE_ALIAS . '.id');
-          $query->condition('bk.isbn', "%" . Html::escape($search_item) . "%", 'LIKE');
+          // Add condition
+          $query->condition(self::TABLE_ALIAS.'.isbn', "%" . Html::escape($search_item) . "%", 'LIKE');
+          $query->condition(self::TABLE_ALIAS . '.issn', "%" . Html::escape($search_item) . "%", 'LIKE');
           break;
 
         default:
@@ -213,7 +214,7 @@ class ItemDAO extends GenericDAO {
     $query->fields('ed', ['id', 'editorial', 'status']);
 
     // Add join to bn_acquisition_condition table
-    $query->join('bn_acquisition_condition', 'aci', 'ac.id = ' . self::TABLE_ALIAS . '.acquisition_condition_id');
+    $query->join('bn_acquisition_condition', 'aci', 'aci.id = ' . self::TABLE_ALIAS . '.acquisition_condition_id');
     $query->fields('aci', ['id', 'condition', 'status']);
 
     // Add join to bn_article_format table
@@ -235,9 +236,9 @@ class ItemDAO extends GenericDAO {
    * @param array $fields
    *   An array conating the book data in key value pair.
    */
-  public static function add(array $fieldsItem, 
-    int $cover_fid = null, 
-    array $authorsItemsList, 
+  public static function add(array $fieldsItem,
+    int $cover_fid = null,
+    array $authorsItemsList,
     array $fieldsEditorial) {
 
     // We open the transaction
@@ -258,9 +259,9 @@ class ItemDAO extends GenericDAO {
 
       // Create Item
       $idNewItem = \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsItem)->execute();
-        
-      $userId = $fieldsArticle['createdby'];
-      
+
+      $userId = $fieldsItem['createdby'];
+
       //Save cover file
       $file_usage = Drupal::service('file.usage');
       if ($cover_fid) {
@@ -285,23 +286,23 @@ class ItemDAO extends GenericDAO {
         } else {
           $idAuthor = $author->getId();
         }
-        
+
         Self::LinkAuthorToItem($idNewItem, $idAuthor, $userId);
       }
 
-      return $idArticle;
+      return $idNewItem;
     }
     catch (Exception $e) {
       $transaction->rollBack();
       watchdog_exception('io_generics_abml.add_article', $e);
     }
 
-    // You can let $transaction go out of scope here and the transaction will 
+    // You can let $transaction go out of scope here and the transaction will
     // automatically be committed if it wasn't already rolled back.
     // However, if you have more work to do, you will want to commit the transaction
     // yourself, like this:
     unset($transaction);
-    
+
     //return \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsBook)->execute();
   }
 
@@ -411,7 +412,7 @@ class ItemDAO extends GenericDAO {
     }
 
     $itemDTO->setPublicationYear($row->publication_year);
-    $itemDTO->setExtension($row->exstension);
+    $itemDTO->setExtension($row->extension);
     $itemDTO->setDimensions($row->dimensions);
     $itemDTO->setOthersPhysicalDetails($row->others_physical_details);
     $itemDTO->setComplements($row->complements);
@@ -430,7 +431,7 @@ class ItemDAO extends GenericDAO {
       $itemDTO->setAcquisitionCondition($acquisitionConditionDTO);
     }
 
-    $itemDTO->setAcquisitionConditionNotes($row->acquision_condiiton_notes);
+    $itemDTO->setAcquisitionConditionNotes($row->acquisition_condition_notes);
 
     // set audit fields
     $createdBy->setUid($row->createdby_uid);

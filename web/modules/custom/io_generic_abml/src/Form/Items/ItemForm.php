@@ -61,7 +61,13 @@ class ItemForm extends FormBase {
    * @return array
    *   The render array defining the elements of the form.
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, int $id = null) {
+
+    $isEdit = false;
+    if(isset($id) && $id !== 0) {
+      $itemDAO = ItemDAO::load($id);
+      $isEdit = true;
+    }
 
     $form['description'] = [
       '#type' => 'item',
@@ -78,7 +84,7 @@ class ItemForm extends FormBase {
     $form['area_1']['title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Título'),
-      '#default_value' => '',
+      '#default_value' => ($itemDAO) ? $itemDAO->getTitle() : '',
       '#required' => TRUE,
       '#attributes' => [
         'placeholder' => 'Título del ítem',
@@ -89,7 +95,7 @@ class ItemForm extends FormBase {
     $form['area_1']['item_type_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Tipo de ítem (DGM)'),
-      '#default_value' => '',
+      '#default_value' => ($itemDAO && $itemDAO->getItemType()) ? $itemDAO->getItemType()->getId() : 0,
       '#options' => $itemsTypesOptions,
       '#required' => TRUE,
       '#attributes' => [
@@ -105,7 +111,7 @@ class ItemForm extends FormBase {
     $form['area_1']['parallel_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Título paralelo'),
-      '#default_value' => '',
+      '#default_value' => ($itemDAO) ? $itemDAO->getParallelTitle() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Título paralelo del ítem',
@@ -539,8 +545,8 @@ class ItemForm extends FormBase {
       } else {
         // Create a new Editorial
         $fieldsEditorial = [
-          'id' => $form_state->getUserInput()['editorial_id'],              
-        ];  
+          'id' => $form_state->getUserInput()['editorial_id'],
+        ];
       }
 
       $fieldsItem = [
@@ -567,7 +573,7 @@ class ItemForm extends FormBase {
       ];
 
       ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial);
-      $this->messenger()->addStatus($this->t('El item %title fue creado satisfactoriamente.', ['%title' => $title]));
+      $this->messenger()->addStatus($this->t('El item %title fue creado satisfactoriamente.', ['%title' => trim(strtoupper($form_state->getUserInput()['area_1']['title']))]));
 
     } else { //Ajax callbacks reactions
       if ($trigger == 'Agregar autor') {
