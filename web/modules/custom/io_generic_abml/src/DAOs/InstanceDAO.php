@@ -6,10 +6,9 @@ use Drupal\Component\Utility\Html;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
 
-use Drupal\io_generic_abml\DTOs\BookDTO;
-use Drupal\io_generic_abml\DTOs\ArticleDTO;
-use Drupal\io_generic_abml\DTOs\ArticleTypeDTO;
-use Drupal\io_generic_abml\DTOs\ArticleFormatDTO;
+use Drupal\io_generic_abml\DTOs\ItemDTO;
+use Drupal\io_generic_abml\DTOs\InstanceDTO;
+use Drupal\io_generic_abml\DTOs\InstanceStatusDTO;
 use Drupal\io_generic_abml\DTOs\EditorialDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
 
@@ -37,6 +36,106 @@ class InstanceDAO extends GenericDAO {
    */
   public static function add(array $fields) {
     return \Drupal::database()->insert(self::TABLE_NAME)->fields($fields)->execute();
+  }
+
+  /**
+   * To get multiple Tipos de Equipos records.
+   *
+   * @param array $header
+   *   The table header used to sort the results
+   * @param string $search_key
+   *   The search string to filter
+   * @param int $limit
+   *   The number of records to be fetched.
+   */
+  public static function getInstancesFromItem($header, $idItem = NULL ,$limit = NULL) {
+    $limit = 99;
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id', 'inv_code', 'signature', 'item_id', 'createdon', 'updatedon']);
+    // Add join to bn_instance_status table
+    $query->join('bn_instance_status', 'is', 'is.id = ' . self::TABLE_ALIAS . '.instance_status_id');
+    $query->fields('is', ['id', 'status_name', 'status', 'lendable']);
+    // Add the audit fields to the query.
+    $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
+    // If $search_key is not null means that need to add the where condition.
+    if (!is_null($idItem)) {
+      $query->condition(self::TABLE_ALIAS. '.instance_status_id', $idItem, '=');
+    }
+    // Add the orderBy sentences to the query using the header.
+    $query->extend('Drupal\Core\Database\Query\TableSortExtender')->orderByHeader($header);
+    // Add the range sentence (limit, lenght) to the query using the page number.
+    $query = $query->extend('Drupal\Core\Database\Query\PagerSelectExtender')->limit($limit);
+    // Results array to be returned.
+    $results = [];
+    // Add to the results array the total rows count.
+    $results = parent::addTotalCounterData($query, $results);
+    // Query execution.
+    $result = $query->execute()->fetchAll();
+    // Add to the results the counter summary considering the pagination.
+    $results = parent::addSummaryCounterData($query, $results, $limit);
+    //Now we have to build the DTO list result.
+    $resultsDTO = [];
+    // DB results iterations
+    foreach ($result as $key => $row) {
+      $entityDTO = self::getInstanceDTOFromRecord($row);
+      // Add element to result array
+      array_push($resultsDTO, $entityDTO);
+    }
+    // Add the DTOs to the results array.
+    $results['resultsDTO'] = $resultsDTO;
+    return $results;
+  }
+  
+  /** Utis methods *********************************************************************************/
+  /**
+   * Create a InstanceDTO from stdClass from DB Record
+   *
+   * @param stdClass $row
+   *   stdClass DB record
+   * @return ItemDTO $itemDTO
+   *   DTO object
+   */
+  private static function getInstanceDTOFromRecord($row) {
+    $instanceDTO = new InstanceDTO();
+    $createdBy = new UserDTO();
+    $updatedBy = new UserDTO();
+
+    // set simple fields
+    $instanceDTO->setId($row->id);
+    $instanceDTO->setInvCode($row->inv_code);
+    $instanceDTO->setSignature($row->signature);
+    
+    // set Item which instance belong to
+    if (isset($row->item_id)) {
+      $itemDTO = new ItemDTO();
+      $itemDTO->setId($row->item_id);
+      $instanceDTO->setItem($itemDTO);
+    }
+    
+    // set Item which instance belong to
+    if (isset($row->is_id)) {
+      $instanceStatusDTO = new InstanceStatusDTO();
+      $instanceStatusDTO->setId($row->is_id);
+      $instanceStatusDTO->setStatusName($row->status_name);
+      $instanceStatusDTO->setStatus($row->status);
+      $instanceStatusDTO->setLendable($row->lendable);
+      $instanceDTO->setInstanceStatus($instanceStatusDTO);
+    }
+
+    // set audit fields
+    $createdBy->setUid($row->createdby_uid);
+    $createdBy->setUsername($row->createdby);
+    $instanceDTO->setCreatedBy($createdBy);
+
+    $instanceDTO->setCreatedOn($row->createdon);
+
+    $updatedBy->setUid($row->updatedby_uid);
+    $updatedBy->setUsername($row->updatedby);
+    $instanceDTO->setUpdatedBy($updatedBy);
+
+    $instanceDTO->setUpdatedOn($row->updatedon);
+
+    return $instanceDTO;
   }
 
 }

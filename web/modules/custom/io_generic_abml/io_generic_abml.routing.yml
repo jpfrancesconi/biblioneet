@@ -113,7 +113,20 @@ io_generic_abml.items.edit:
       id:
         type: int
 
+# Instances routes ########################################################################
+io_generic_abml.items.instances.list:
+  path: '/items/instances/{id}/list'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\InstancesController::listInstancesByItem'
+    _title: 'Gestion de Existencias'
+  requirements:
+    _permission: 'manage item instances'
+  options:
+    parameters:
+      id:
+        type: int
 
+# to DELETE ########################################################################
 io_generic_abml.test.form:
   path: '/test/jpform1'
   defaults:

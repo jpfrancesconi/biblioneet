@@ -62,10 +62,12 @@ class ItemForm extends FormBase {
    *   The render array defining the elements of the form.
    */
   public function buildForm(array $form, FormStateInterface $form_state, int $id = null) {
-
+    // Set default values to variables
     $isEdit = false;
+    $itemDTO = null;
+    // Check if we come from edit or new
     if(isset($id) && $id !== 0) {
-      $itemDAO = ItemDAO::load($id);
+      $itemDTO = ItemDAO::load($id);
       $isEdit = true;
     }
 
@@ -84,7 +86,7 @@ class ItemForm extends FormBase {
     $form['area_1']['title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Título'),
-      '#default_value' => ($itemDAO) ? $itemDAO->getTitle() : '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getTitle() : '',
       '#required' => TRUE,
       '#attributes' => [
         'placeholder' => 'Título del ítem',
@@ -95,7 +97,7 @@ class ItemForm extends FormBase {
     $form['area_1']['item_type_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Tipo de ítem (DGM)'),
-      '#default_value' => ($itemDAO && $itemDAO->getItemType()) ? $itemDAO->getItemType()->getId() : 0,
+      '#default_value' => ($itemDTO && $itemDTO->getItemType()) ? $itemDTO->getItemType()->getId() : 0,
       '#options' => $itemsTypesOptions,
       '#required' => TRUE,
       '#attributes' => [
@@ -111,7 +113,7 @@ class ItemForm extends FormBase {
     $form['area_1']['parallel_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Título paralelo'),
-      '#default_value' => ($itemDAO) ? $itemDAO->getParallelTitle() : '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getParallelTitle() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Título paralelo del ítem',
@@ -469,6 +471,15 @@ class ItemForm extends FormBase {
     ];
     // If all required fields are not completed we can't submit the form yet.
     //$form['actions']['submit']['#disabled'] = TRUE;
+
+    if($isEdit) {
+      $form['actions']['instances'] = [
+        '#type' => 'link',
+        '#title' => 'EXISTENCIAS',
+        '#attributes' => ['class' => ['btn', 'btn-primary', 'btn-sm']],
+        '#url' => Url::fromRoute('io_generic_abml.items.instances.list', ['id' => $itemDTO->getId()]),
+      ];  
+    }
 
     $form['actions']['cancel'] = [
       '#type' => 'link',
