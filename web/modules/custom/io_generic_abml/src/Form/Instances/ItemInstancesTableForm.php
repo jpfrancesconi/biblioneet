@@ -29,7 +29,7 @@ class ItemInstancesTableForm implements FormInterface {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, int $id = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $id = null) {
     global $base_url;
 
     //$form = parent::buildForm($form, $form_state);
@@ -48,7 +48,7 @@ class ItemInstancesTableForm implements FormInterface {
     ];
 
     $fullResults = InstanceDAO::getInstancesFromItem($header, $id);
-    
+
     // Get the counter data to be shown in the counter summary section.
     $counter = $fullResults['counter'];
     // Get the DTOs object to be shown in the results table.

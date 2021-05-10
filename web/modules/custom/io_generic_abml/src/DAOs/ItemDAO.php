@@ -252,6 +252,9 @@ class ItemDAO extends GenericDAO {
         $newEditorialId = EditorialDAO::add($fieldsEditorial);
         // Set new Editorial to item
         $fieldsItem['editorial_id'] = $newEditorialId;
+      } else if($fieldsEditorial['id'] === "" || $fieldsEditorial['id'] === "0") {
+        // Set new Editorial to item
+        $fieldsItem['editorial_id'] = null;
       } else {
         // Set new Editorial to item
         $fieldsItem['editorial_id'] = $fieldsEditorial['id'];
@@ -304,6 +307,32 @@ class ItemDAO extends GenericDAO {
     unset($transaction);
 
     //return \Drupal::database()->insert(self::TABLE_NAME)->fields($fieldsBook)->execute();
+  }
+
+  /**
+   * Get number of instance from a determined item
+   * @param int $itemId
+   * @param int $lendable
+   * @return $count
+   */
+  public static function getItemAvalability($itemId, $lendable = 1) {
+    /*
+    SELECT COUNT(*) AS AVAILABLE
+    FROM biblioneet_dev.bn_item ite
+    JOIN bn_instance ins ON ins.item_id = ite.id
+    JOIN bn_instance_status ist ON ins.instance_status_id = ist.id
+    WHERE ite.id = 1 and ist.lendable = 1;
+    */
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS);
+    // Add join to bn_instance table
+    $query->join('bn_instance', 'ins', 'ins.item_id = ' . self::TABLE_ALIAS . '.id');
+    // Add join to bn_instance_status table
+    $query->join('bn_instance_status', 'ist', 'ist.id = ins.instance_status_id');
+    $query->condition(self::TABLE_ALIAS . '.id', $itemId, '=');
+    $query->condition('ist.lendable', $lendable, '=');
+    $result = $query->countQuery()->execute()->fetchField();
+
+    return $result;
   }
 
   /**

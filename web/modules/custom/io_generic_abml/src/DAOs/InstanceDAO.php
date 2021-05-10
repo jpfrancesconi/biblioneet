@@ -85,7 +85,39 @@ class InstanceDAO extends GenericDAO {
     $results['resultsDTO'] = $resultsDTO;
     return $results;
   }
-  
+
+  /**
+   * To load an Instance record.
+   *
+   * @param int $id
+   *   The instance ID.
+   * @return ItemDTO $objectDTO
+   *   The searched object DTO.
+   */
+  public static function load($id) {
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id', 'inv_code', 'signature', 'item_id', 'createdon', 'updatedon']);
+    // Add join to bn_instance_status table
+    $query->join('bn_instance_status', 'is', 'is.id = ' . self::TABLE_ALIAS . '.instance_status_id');
+    $query->fields('is', ['id', 'status_name', 'status', 'lendable']);
+    // Add the audit fields to the query.
+    $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
+
+    $result = $query->condition(self::TABLE_ALIAS . '.id', $id, '=')->execute()->fetchObject();
+    $objectDTO = self::getInstanceDTOFromRecord($result);
+
+    return $objectDTO;
+  }
+
+  /**
+   * Get the list of Items Types in the select format
+   */
+  public static function getInstanceStatusSelectFormat($status = NULL, $opcion_vacia) {
+    $select_options = parent::getListSelectFormat('bn_instance_status', 'status_name', $status, $opcion_vacia);
+
+    return $select_options;
+  }
+
   /** Utis methods *********************************************************************************/
   /**
    * Create a InstanceDTO from stdClass from DB Record
@@ -104,14 +136,14 @@ class InstanceDAO extends GenericDAO {
     $instanceDTO->setId($row->id);
     $instanceDTO->setInvCode($row->inv_code);
     $instanceDTO->setSignature($row->signature);
-    
+
     // set Item which instance belong to
     if (isset($row->item_id)) {
       $itemDTO = new ItemDTO();
       $itemDTO->setId($row->item_id);
       $instanceDTO->setItem($itemDTO);
     }
-    
+
     // set Item which instance belong to
     if (isset($row->is_id)) {
       $instanceStatusDTO = new InstanceStatusDTO();

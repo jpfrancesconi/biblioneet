@@ -55,7 +55,7 @@ class ItemsController extends GenericABMLController {
         }
 
         $rows[$itemDTO->getId()] = [
-          'id' => sprintf("%04s", $itemDTO->getId()),
+          'id' => sprintf("%05s", $itemDTO->getId()),
           'picture' => [
             'data' => [
               '#type' => 'html_tag',
@@ -66,6 +66,9 @@ class ItemsController extends GenericABMLController {
           'title' => $itemDTO->getTitle(),
           'editorial' => ($itemDTO->getEditorial() !== null) ? $itemDTO->getEditorial()->getEditorial() : "",
           'itemType' => $itemDTO->getItemType()->getType(),
+          'available' => ItemDAO::getItemAvalability($itemDTO->getId(), 1),
+          'not_available' => ItemDAO::getItemAvalability($itemDTO->getId(), 0),
+          'edit_item' => true,
           //'itemFormat' => $itemDTO->getItemFormat()->getFormat(),
         ];
       }

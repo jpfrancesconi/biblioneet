@@ -11,9 +11,13 @@
       <div class="card" style="width: 18rem; text-align: center;">
         <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="text-align: center; width: 150px; height: 150px; object-fit: cover; margin: 0 auto;">
         <div class="card-body">
-          <h5 class="card-title">{{ item.title }}</h5>
+          <h5 class="card-title">{{ item.title }}{% if item.edit_item %}
+            <a href="{{item.id}}/edit" title="EDITAR"><i class="fas fa-edit"></i></a>
+          {% endif %}</h5>
           {% if item.editorial %}<p>Editorial: {{ item.editorial }}</p>{% endif %}
-          <p class="badge badge-pill badge-success">{{ item.itemType }}</p>
+          <p>Tipo:{{ item.itemType }}</p>
+          <p class="badge badge-pill badge-success">Disponibles: {{ item.available }}</p>
+          <p class="badge badge-pill badge-danger">No disponibles: {{ item.not_available }}</p>
           {# <p class="badge badge-pill badge-success">{{ item.articleFormat }}</p> #}
           {#{ kint(item) }#}
         </div>

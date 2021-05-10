@@ -5,6 +5,7 @@ namespace Drupal\io_generic_abml\Controller;
 use Drupal;
 
 use Drupal\file\Entity\File;
+use Drupal\Core\Url;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -32,13 +33,21 @@ class InstancesController extends GenericABMLController {
 
     // item instances table form
     $entity_table_form_instance = new ItemInstancesTableForm($id);
-    $content['table'] = $this->formBuilder->getForm($entity_table_form_instance);
-    
+    $content['table'] = $this->formBuilder->getForm($entity_table_form_instance, $id);
+
     // attach library to open modals
     $content['#attached'] = ['library' => ['core/drupal.dialog.ajax']];
 
     // now we've to display add form
-    
+    $content['add_form'] = $this->formBuilder->getForm('Drupal\io_generic_abml\Form\Instances\InstanceForm', ['id' => $id]);
+
+    $content['actions']['cancel'] = [
+      '#type' => 'link',
+      '#title' => 'VOLVER',
+      '#attributes' => ['class' => ['btn', 'btn-danger', 'btn-sm']],
+      '#url' => Url::fromRoute('io_generic_abml.items.list'),
+    ];
+
     return $content;
   }
 }

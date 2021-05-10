@@ -478,7 +478,7 @@ class ItemForm extends FormBase {
         '#title' => 'EXISTENCIAS',
         '#attributes' => ['class' => ['btn', 'btn-primary', 'btn-sm']],
         '#url' => Url::fromRoute('io_generic_abml.items.instances.list', ['id' => $itemDTO->getId()]),
-      ];  
+      ];
     }
 
     $form['actions']['cancel'] = [
@@ -544,7 +544,7 @@ class ItemForm extends FormBase {
 
       // Editoral
       // Check if we have to create a new one
-      if($form_state->getUserInput()['area_4']['editorial_id'] === '-1') {
+      if($form_state->getUserInput()['editorial_id'] === '-1') {
         // Create a new Editorial
         $fieldsEditorial = [
           'id' => -1,
