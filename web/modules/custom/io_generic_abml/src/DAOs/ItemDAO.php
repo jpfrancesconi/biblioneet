@@ -336,6 +336,36 @@ class ItemDAO extends GenericDAO {
   }
 
   /**
+   * Get number of instance from a determined item
+   * @param int $itemId
+   * 
+   * @return $authorList
+   */
+  public static function getAuthorsFromItem($itemId) {
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields('a', [
+        'id',
+        'first_name',
+        'last_name','createdon',
+        'updatedon'
+      ]);
+    // Add join to bn_instance table
+    $query->join('bn_item_author', 'ia', 'ia.item_id = ' . self::TABLE_ALIAS . '.id');
+    // Add join to bn_instance_status table
+    $query->join('bn_author', 'a', 'a.id = ia.author_id');
+    $query->condition(self::TABLE_ALIAS . '.id', $itemId, '=');
+    
+    $result = $query->execute()->fetchAll();
+
+    $select_options = [];
+    foreach($result as $key => $row) {
+      $select_options[$row->id] = $row->first_name .', '. $row->last_name;
+    }
+
+    return $select_options;
+  }
+
+  /**
    * Get the list of Items Types in the select format
    */
   public static function getItemsTypesSelectFormat($status = NULL, $opcion_vacia) {

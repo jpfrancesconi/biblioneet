@@ -68,6 +68,7 @@ class ItemForm extends FormBase {
     // Check if we come from edit or new
     if(isset($id) && $id !== 0) {
       $itemDTO = ItemDAO::load($id);
+      $initial_authors_selected_list = ItemDAO::getAuthorsFromItem($itemDTO->getID());
       $isEdit = true;
     }
 
@@ -135,7 +136,7 @@ class ItemForm extends FormBase {
       '#type' => 'table',
       //'#caption' => $this->t('Lista de autores del libro'),
       '#header' => [$this->t('Nombre'), $this->t('Apellido'), $this->t('')],
-      //'#rows' => $authors_selected_list,
+      //'#rows' => $initial_authors_selected_list,
       '#empty' => $this->t('Seleccione el o los autores o autoras del item.'),
       //'#description' => $this->t('Estos autores se vincularan con el libro que esta dando de alta.'),
       '#attributes' => [
@@ -244,12 +245,13 @@ class ItemForm extends FormBase {
     $form['area_2'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de edición.'),
+      '#open' => TRUE,
     ];
     // Field: bn_item.edition
     $form['area_2']['edition'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Edición'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getEdition() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Edición del ítem',
@@ -260,12 +262,13 @@ class ItemForm extends FormBase {
     $form['area_4'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de publicación.'),
+      '#open' => TRUE,
     ];
     // Field: bn_item.publication_place
     $form['area_4']['publication_place'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Lugar de publicación'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getPublicationPlace() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Lugar de publicación del ítem',
@@ -276,7 +279,7 @@ class ItemForm extends FormBase {
     $form['area_4']['editorial_id'] = [
       '#type' => 'select2',
       '#title' => $this->t('Editorial'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO && $itemDTO->getEditorial()) ? $itemDTO->getEditorial()->getId() : '',
       '#options' => $editorialesFormatOptions,
       '#required' => FALSE,
       '#attributes' => [
@@ -300,7 +303,7 @@ class ItemForm extends FormBase {
     $form['area_4']['publication_year'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Fecha de publicación'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getPublicationYear() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Fecha de publicación del ítem',
@@ -311,12 +314,13 @@ class ItemForm extends FormBase {
     $form['area_5'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de descripcición física.'),
+      '#open' => TRUE,
     ];
     // Field: bn_item.extension
     $form['area_5']['extension'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Extensión del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getExtension() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Extensión del ítem',
@@ -326,7 +330,7 @@ class ItemForm extends FormBase {
     $form['area_5']['dimensions'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Dimensiones del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getDimensions() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Dimensiones del ítem',
@@ -336,7 +340,7 @@ class ItemForm extends FormBase {
     $form['area_5']['others_physical_details'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Detalles físicos del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getOthersPhysicalDetails() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Detalles físicos del ítem',
@@ -346,7 +350,7 @@ class ItemForm extends FormBase {
     $form['area_5']['complements'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Material complementario del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getComplements() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Material complementario del ítem',
@@ -357,12 +361,13 @@ class ItemForm extends FormBase {
     $form['area_6'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de la serie.'),
+      '#open' => TRUE,
     ];
     // Field: bn_item.serie_title
     $form['area_6']['serie_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Título de la colección del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getSerieTitle() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Título de la colección del ítem',
@@ -372,7 +377,7 @@ class ItemForm extends FormBase {
     $form['area_6']['serie_number'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Numeración de la serie del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getSerieNumber() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Numeración de la serie del ítem',
@@ -383,12 +388,13 @@ class ItemForm extends FormBase {
     $form['area_7'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de las notas.'),
+      '#open' => TRUE,
     ];
     // Field: bn_item.notes
     $form['area_7']['notes'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Notas del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getNotes() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Notas del ítem',
@@ -399,11 +405,13 @@ class ItemForm extends FormBase {
     $form['area_8'] = [
       '#type' => 'details',
       '#title' => $this->t('Área de número normalizado y condiciones de adquisición.'),
+      '#open' => TRUE,
     ];
     // ISBN Field
     $form['area_8']['isbn'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ISBN'),
+      '#default_value' => ($itemDTO) ? $itemDTO->getIsbn() : '',
       '#require' => FALSE,
       '#attributes' => [
         'placeholder' => $this->t('ISBN'),
@@ -412,6 +420,7 @@ class ItemForm extends FormBase {
     $form['area_8']['issn'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ISSN'),
+      '#default_value' => ($itemDTO) ? $itemDTO->getIssn() : '',
       '#require' => FALSE,
       '#attributes' => [
         'placeholder' => $this->t('ISSN'),
@@ -422,7 +431,7 @@ class ItemForm extends FormBase {
     $form['area_8']['acquisition_condition_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Condición de adquisición'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO && $itemDTO->getAcquisitionCondition()) ? $itemDTO->getAcquisitionCondition()->getId() : '',
       '#options' => $acquisitionConditionsTypesOptions,
       '#required' => FALSE,
       '#attributes' => [
@@ -433,7 +442,7 @@ class ItemForm extends FormBase {
     $form['area_8']['acquisition_condition_notes'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Notas de la condición de adquisición del ítem'),
-      '#default_value' => '',
+      '#default_value' => ($itemDTO) ? $itemDTO->getAcquisitionConditionNotes() : '',
       '#required' => FALSE,
       '#attributes' => [
         'placeholder' => 'Notas de la condición de adquisición del ítem',
@@ -444,6 +453,7 @@ class ItemForm extends FormBase {
     $form['area_9'] = [
       '#type' => 'details',
       '#title' => $this->t('Información adicional sobre el ítem.'),
+      '#open' => TRUE,
     ];
     // Field: cover
     $form['area_9']['upload']['cover'] = [
@@ -456,7 +466,7 @@ class ItemForm extends FormBase {
         //'file_validate_image_resolution' => array('800x600', '400x300'),.
       ],
       '#title'              => $this->t('Foto o Imagen del ítem'),
-      '#default_value'      => null, //($authorDTO) ? [$authorDTO->getPicture()] : '',
+      '#default_value'      => ($itemDTO) ? [$itemDTO->getCover()] : '',
     ];
 
     $form['actions'] = [
@@ -502,22 +512,27 @@ class ItemForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $trigger = (string) $form_state->getTriggeringElement()['#value'];
     $formValues = $form_state->getValues();
-
-    if (strlen($formValues['area_1']['title']) < 5 || strlen($formValues['area_1']['title']) > 255) {
-      // Set an error for the form element with a key of "title".
-      $form_state->setErrorByName('title', $this->t('El tìtulo debe contener al menos 2 caracteres y como maximo 255 caracteres.'));
-    }
-    if ($formValues['area_1']['item_type_id'] === "0") {
-      $form_state->setErrorByName('item_type_id', $this->t('Debe seleccionar un tipo de ítem.'));
-    }
-
-    // Validate if we're adding a new author
-    if ($trigger === "Agregar autor") {
+    if($trigger === "Agregar autor") {
+      // Validate if we're adding a new author
       $author_selected_option = $form_state->getUserInput()['author_selector'];
       if ($author_selected_option === "-1") {
         $newAuthor = $formValues['area_1']['authors_fieldset']['new_author'];
         if ($newAuthor === "")
           $form_state->setErrorByName('authors_fieldset', $this->t('Debe seleccionar los autores correctamente.'));
+      }    
+    } else {
+      if (strlen($formValues['area_1']['title']) < 5 || strlen($formValues['area_1']['title']) > 255) {
+        // Set an error for the form element with a key of "title".
+        $form_state->setErrorByName('title', $this->t('El tìtulo debe contener al menos 2 caracteres y como maximo 255 caracteres.'));
+      }
+      if ($formValues['area_1']['item_type_id'] === "0") {
+        $form_state->setErrorByName('item_type_id', $this->t('Debe seleccionar un tipo de ítem.'));
+      }
+  
+      // Validate acquisition condition selection
+      if($form_state->getUserInput()['area_8']['acquisition_condition_id'] === ""
+        || $form_state->getUserInput()['area_8']['acquisition_condition_id'] === "0") {
+          $form_state->setErrorByName('acquisition_condition_id', $this->t('Debe seleccionar una condición de adquisición.'));
       }
     }
   }
