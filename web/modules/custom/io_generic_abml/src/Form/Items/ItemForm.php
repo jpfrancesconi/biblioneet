@@ -466,7 +466,7 @@ class ItemForm extends FormBase {
         //'file_validate_image_resolution' => array('800x600', '400x300'),.
       ],
       '#title'              => $this->t('Foto o Imagen del ítem'),
-      '#default_value'      => ($itemDTO) ? [$itemDTO->getCover()] : '',
+      '#default_value'      => ($itemDTO) && $itemDTO->getCover() ? [$itemDTO->getCover()] : '',
     ];
 
     $form['actions'] = [
@@ -519,7 +519,7 @@ class ItemForm extends FormBase {
         $newAuthor = $formValues['area_1']['authors_fieldset']['new_author'];
         if ($newAuthor === "")
           $form_state->setErrorByName('authors_fieldset', $this->t('Debe seleccionar los autores correctamente.'));
-      }    
+      }
     } else {
       if (strlen($formValues['area_1']['title']) < 5 || strlen($formValues['area_1']['title']) > 255) {
         // Set an error for the form element with a key of "title".
@@ -528,7 +528,7 @@ class ItemForm extends FormBase {
       if ($formValues['area_1']['item_type_id'] === "0") {
         $form_state->setErrorByName('item_type_id', $this->t('Debe seleccionar un tipo de ítem.'));
       }
-  
+
       // Validate acquisition condition selection
       if($form_state->getUserInput()['area_8']['acquisition_condition_id'] === ""
         || $form_state->getUserInput()['area_8']['acquisition_condition_id'] === "0") {

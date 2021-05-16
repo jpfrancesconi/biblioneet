@@ -60,3 +60,13 @@ manage item instances:
   title: 'Manage item instances'
   description: 'Allow to user manage Item existences'
   restrict access: true
+
+edit instance:
+  title: 'Edit instance'
+  description: 'Edit an instance'
+  restrict access: true
+
+delete instance:
+  title: 'Delete instance'
+  description: 'Delete an instance'
+  restrict access: true

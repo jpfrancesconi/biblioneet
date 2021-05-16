@@ -59,7 +59,7 @@ class InstanceDAO extends GenericDAO {
     $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
     // If $search_key is not null means that need to add the where condition.
     if (!is_null($idItem)) {
-      $query->condition(self::TABLE_ALIAS. '.instance_status_id', $idItem, '=');
+      $query->condition(self::TABLE_ALIAS. '.item_id', $idItem, '=');
     }
     // Add the orderBy sentences to the query using the header.
     $query->extend('Drupal\Core\Database\Query\TableSortExtender')->orderByHeader($header);

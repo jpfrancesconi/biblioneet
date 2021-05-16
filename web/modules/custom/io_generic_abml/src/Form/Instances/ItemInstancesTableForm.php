@@ -36,13 +36,13 @@ class ItemInstancesTableForm implements FormInterface {
 
     // Table header.
     $header = [
-      ['data' => t('CODIGO'), 'field' => 'ins.id'],
+      ['data' => t('CÓDIGO'), 'field' => 'ins.id'],
       ['data' => t('INVENTARIO'), 'field' => 'ins.inv_code'],
       ['data' => t('ESTADO'), 'field' => 'ins.instance_status_id'],
       ['data' => t('SIGNATURA'), 'field' => 'ins.signature'],
       ['data' => t('CREADOR'), 'field' => 'ins.createdby'],
       ['data' => t('CREADO'), 'field' => 'ins.createdon'],
-      ['data' => t('MODIFICO'), 'field' => 'ins.updatedby'],
+      ['data' => t('MODIFICÓ'), 'field' => 'ins.updatedby'],
       ['data' => t('MODIFICADO'), 'field' => 'ins.updatedon'],
       'actions' => 'OPERACIONES',
     ];
@@ -73,27 +73,27 @@ class ItemInstancesTableForm implements FormInterface {
       /** @var \Drupal\io_generic_abml\DTOs\instanceDTO $instanceDTO */
       $instanceDTO = $row;
 
-    //   $ajax_link_attributes = [
-    //     'attributes' => [
-    //       'class' => 'use-ajax',
-    //       'data-dialog-type' => 'modal',
-    //       'data-dialog-options' => ['width' => 700, 'height' => 400],
-    //     ],
-    //   ];
-    //   $ajax_link_attributes['attributes']['title'] = t('Editar');
-    //   $editUrl = Url::fromRoute('io_generic_abml.equipo_tipo.edit.getmodal', ['equipo_tipo_id' => $instanceDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
-    //   $quickEditLink = \Drupal::service('link_generator')->generate(t('<i class="fas fa-edit"></i>'), $editUrl);
+      $ajax_link_attributes = [
+        'attributes' => [
+          'class' => 'use-ajax',
+          'data-dialog-type' => 'modal',
+          'data-dialog-options' => ['width' => 700, 'height' => 400],
+        ],
+      ];
+      $ajax_link_attributes['attributes']['title'] = t('Editar');
+      $editUrl = Url::fromRoute('io_generic_abml.items.instances.edit', ['id' => $instanceDTO->getItem()->getId(), 'idInstance' => $instanceDTO->getId(), 'js' => 'no']);
+      $quickEditLink = \Drupal::service('link_generator')->generate(t('<i class="fas fa-edit"></i>'), $editUrl);
 
-    //   // prepare delete link
-    //   $ajax_link_attributes['attributes']['title'] = t('Eliminar');
-    //   $deletetUrl = Url::fromRoute('io_generic_abml.equipo_tipo.delete.getmodal', ['equipo_tipo_id' => $instanceDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
-    //   $deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
+      // prepare delete link
+      $ajax_link_attributes['attributes']['title'] = t('Eliminar');
+      $deletetUrl = Url::fromRoute('io_generic_abml.items.instances.delete', ['id' => $instanceDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
+      $deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
 
-    //   // prepare tipos de falla link
-    //   $tiposFallaUrl = Url::fromRoute('io_generic_abml.falla_tipo.list', ['equipo_tipo_id' => $instanceDTO->getId()], ['attributes' => ['title' => 'Tipos de falla']]);
-    //   $tiposFallaLink = \Drupal::service('link_generator')->generate(t('<i class="fas fa-tools"></i>'), $tiposFallaUrl);
+      // prepare Qr generator link
+      $qrGenerateUrl = Url::fromRoute('io_generic_abml.items.instances.edit', ['id' => $instanceDTO->getId()], ['attributes' => ['title' => 'Generar QR']]);
+      $qrGenerateLink = \Drupal::service('link_generator')->generate(t('<i class="fa fa-qrcode" aria-hidden="true"></i>'), $qrGenerateUrl);
 
-      $operationLinks = null;//t('@linkEdit @linkDelete @linkTiposFalla', array('@linkEdit' => $quickEditLink, '@linkDelete' => $deleteLink, '@linkTiposFalla' => $tiposFallaLink));
+      $operationLinks = t('@linkEdit @linkDelete @linkQrGenerate', array('@linkEdit' => $quickEditLink, '@linkDelete' => $deleteLink, '@linkQrGenerate' => $qrGenerateLink));
 
       $form['table'][$instanceDTO->getId()]['codigo'] = [
         '#plain_text' => $instanceDTO->getId(),

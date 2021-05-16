@@ -126,6 +126,30 @@ io_generic_abml.items.instances.list:
       id:
         type: int
 
+io_generic_abml.items.instances.edit:
+  path: '/items/instances/instance/{id}/edit'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Instances\InstanceForm'
+    _title: 'Editar Existencia'
+  requirements:
+    _permission: 'edit instance'
+  options:
+    parameters:
+      id:
+        type: int
+
+io_generic_abml.items.instances.delete:
+  path: '/items/instances/instance/{id}/delete'
+  defaults:
+    _form: 'Drupal\io_generic_abml\Form\Instances\InstanceDeleteForm'
+    _title: 'Eliminar Existencia'
+  requirements:
+    _permission: 'delete instance'
+  options:
+    parameters:
+      id:
+        type: int
+
 # to DELETE ########################################################################
 io_generic_abml.test.form:
   path: '/test/jpform1'
