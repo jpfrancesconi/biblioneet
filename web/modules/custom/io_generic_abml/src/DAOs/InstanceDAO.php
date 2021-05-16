@@ -39,6 +39,46 @@ class InstanceDAO extends GenericDAO {
   }
 
   /**
+   * To update an existing record.
+   *
+   * @param int $id
+   *   The entity ID.
+   * @param array $fields
+   *   An array conating the author data in key value pair.
+   */
+  public static function update($id, array $fields) {
+    return \Drupal::database()->update(self::TABLE_NAME)->fields($fields)
+      ->condition('id', $id)
+      ->execute();
+  }
+
+  /**
+   * To delete a specific record.
+   *
+   * @param int $id
+   *   The entity ID.
+   */
+  public static function delete($id) {
+    $record = self::load($id);
+    return \Drupal::database()->delete(self::TABLE_NAME)->condition('id', $id)->execute();
+  }
+
+  /**
+   * To check if is an Instance valid.
+   *
+   * @param int $id
+   *   The Instance ID.
+   */
+  public static function exists($id) {
+    $result = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id'])
+      ->condition('id', $id, '=')
+      ->execute()
+      ->fetchField();
+    return (bool) $result;
+  }
+
+  /**
    * To get multiple Tipos de Equipos records.
    *
    * @param array $header

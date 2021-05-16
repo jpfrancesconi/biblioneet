@@ -86,7 +86,7 @@ class ItemInstancesTableForm implements FormInterface {
 
       // prepare delete link
       $ajax_link_attributes['attributes']['title'] = t('Eliminar');
-      $deletetUrl = Url::fromRoute('io_generic_abml.items.instances.delete', ['id' => $instanceDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
+      $deletetUrl = Url::fromRoute('io_generic_abml.items.instances.delete', ['id' => $instanceDTO->getId(), 'js' => 'no']);
       $deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
 
       // prepare Qr generator link

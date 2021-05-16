@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Drupal\io_generic_abml\DAOs\InstanceDAO;
+use Drupal\io_generic_abml\DAOs\ItemDAO;
 
 use Drupal\io_generic_abml\DTOs\InstanceDTO;
 
@@ -73,6 +74,7 @@ class InstanceForm extends FormBase implements FormInterface {
       $idInstance = $_GET['idInstance'];
     if (isset($idInstance) && $idInstance !== 0) {
       $instanceDTO = InstanceDAO::load($idInstance);
+      $itemDTO = ItemDAO::load($instanceDTO->getItem()->getId());
       $isEdit = true;
       $form['id_instance'] = [
         '#type' => 'hidden',
@@ -84,17 +86,30 @@ class InstanceForm extends FormBase implements FormInterface {
       '#value' => $id,
     ];
 
-    $form['description'] = [
-      '#type' => 'item',
-      '#markup' => $this->t('Desde este formulario se podran crear nuevas existencias o editar las ya registrados'),
-    ];
-
-    // 1- Area de titulo y mencion de responsabilidad
-    $form['container'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos de la existencia a agregar.'),
-      '#open' => TRUE,
-    ];
+    if(!$isEdit) {
+      $form['description'] = [
+        '#type' => 'item',
+        '#markup' => $this->t('Desde este formulario se podran crear nuevas existencias.'),
+      ];
+      // Container
+      $form['container'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Datos de la existencia a agregar.'),
+        '#open' => TRUE,
+      ];
+    } else {
+      // Container
+      $form['container'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Datos de la existencia a editar.'),
+        '#open' => TRUE,
+      ];
+      $form['container']['datos_item'] = [
+        '#type' => 'markup',
+        '#markup' => $this->t('<div><h3>Editando existencia del Item: '. $itemDTO->getTitle() .' </h3></div>'),
+      ];
+    }
+    
     // Field: bn_instance.inv_code
     $form['container']['inv_code'] = [
       '#type' => 'textfield',
@@ -175,19 +190,36 @@ class InstanceForm extends FormBase implements FormInterface {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $formValues = $form_state->getValues();
 
+    // Get hidden instance id
+    $idInstance = $form_state->getValue('id_instance');
+
     // We have to create a new instance
     $user = \Drupal::currentUser();
-    $itemId = intval($form_state->getUserInput()['id_item']['id']);
+    $itemId = intval($form_state->getUserInput()['id_item']);
     $fields = [
       'inv_code' => trim(strtoupper($form_state->getUserInput()['inv_code'])),
       'signature' => trim(strtoupper($form_state->getUserInput()['signature'])),
       'instance_status_id' => $form_state->getUserInput()['instance_status_id'],
       'item_id' => $itemId,
-      'createdby' => $user->id(),
-      'createdon' => date("Y-m-d h:m:s"),
     ];
-    InstanceDAO::add($fields);
-    $this->messenger()->addStatus($this->t('La existencia fue creada satisfactoriamente.'));
+
+    if (!empty($idInstance) && InstanceDAO::exists($idInstance)) {
+      $instance = InstanceDAO::load($idInstance);
+      // Set Updated auditory fields
+      $fields['updatedby'] = $user->id();
+      $fields['updatedon'] = date("Y-m-d h:m:s");
+
+      InstanceDAO::update($idInstance, $fields);
+      $message = 'El registro ha sido actualizado correctamente.';
+    } else {
+      // Set Creation auditory fields
+      $fields['createdby'] = $user->id();
+      $fields['createdon'] = date("Y-m-d h:m:s");
+
+      InstanceDAO::add($fields);
+      $message = 'La existencia fue creada satisfactoriamente.';
+    }
+    $this->messenger()->addStatus($this->t($message));
     $form_state->setRedirect(self::ROUTE_TO_RETURN, ['id' => $itemId]);
   }
 

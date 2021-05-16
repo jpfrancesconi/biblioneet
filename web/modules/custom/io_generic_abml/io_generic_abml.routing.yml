@@ -149,12 +149,3 @@ io_generic_abml.items.instances.delete:
     parameters:
       id:
         type: int
-
-# to DELETE ########################################################################
-io_generic_abml.test.form:
-  path: '/test/jpform1'
-  defaults:
-    _form: 'Drupal\io_generic_abml\Form\JpForm1'
-    _title: 'JP Form 1'
-  requirements:
-    _permission: 'access content'

@@ -21,7 +21,7 @@ class InstancesController extends GenericABMLController {
   /**
    * List instances of an item and manage them
    */
-  public function listInstancesByItem(int $id, Request $req) {
+  public function listInstancesByItem(int $id) {
     $content = [];
     // Check if we've received the id item parameter
     $itemDTO = null;
