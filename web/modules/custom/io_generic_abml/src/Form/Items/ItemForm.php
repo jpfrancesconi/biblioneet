@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\io_generic_abml\DAOs\AuthorDAO;
 use Drupal\io_generic_abml\DAOs\ItemDAO;
+use Drupal\io_generic_abml\DAOs\ClasificationDAO;
 
 use Drupal\io_generic_abml\DTOs\AuthorDTO;
 
@@ -469,6 +470,93 @@ class ItemForm extends FormBase {
       '#default_value'      => ($itemDTO) && $itemDTO->getCover() ? [$itemDTO->getCover()] : '',
     ];
 
+    //Clasificatons block BEGIN **********************************************************
+    // Gather the clasifications selected list in the form.
+    $clasifications_selected_list = ($form_state->get('clasifications_selected_list') ? $form_state->get('clasifications_selected_list') : null);
+    // Relation: item - clasification
+    $form['area_9']['clasifications_fieldset'] = [
+      '#type' => 'details',
+      '#open' => TRUE,
+      '#title' => $this->t('Listado de clasificaciones del item'),
+      '#prefix' => '<div id="clasifications-fieldset-wrapper">',
+      '#suffix' => '</div>',
+    ];
+    $form['area_9']['clasifications_fieldset']['clasifications_selected_table'] = [
+      '#type' => 'table',
+      //'#caption' => $this->t('Lista de clasificaciones del libro'),
+      '#header' => [$this->t('Clasificacion'), $this->t('')],
+      //'#rows' => $initial_authors_selected_list,
+      '#empty' => $this->t('Seleccione las clasificaciones del item.'),
+      //'#description' => $this->t('Estos clasificaciones se vincularan con el libro que esta dando de alta.'),
+      '#attributes' => [
+        'id' => 'table_clasifications',
+        'class' => ['table-sm']
+      ],
+    ];
+
+    // Here we have to add foreach $clasifications_selected_list
+    if(isset($clasifications_selected_list)) {
+      foreach ($clasifications_selected_list as $key => $clasification) {
+        $clasificationId = $clasification->getId();
+        
+        $form['area_9']['clasifications_fieldset']['clasifications_selected_table'][$clasificationId]['clasification_code'] = [
+          '#plain_text' => $clasification->getCode(),
+        ];
+        //$deleteButtonValue = new FormattableMarkup('<i class="far fa-trash-alt '. $key .'"></i>@text', ['@text' => 'Quitar',]);
+        $form['area_9']['clasifications_fieldset']['clasifications_selected_table'][$clasificationId]['actions'] = [
+          '#type' => 'submit',
+          '#value' => 'Quitar', //$deleteButtonValue,
+          '#name' => 'Quitar_' . $clasificationId,
+          '#ajax' => [
+            'callback' => '::addmoreCallback',
+            'wrapper' => 'clasifications-fieldset-wrapper',
+          ],
+          '#attributes' => [
+            'class' => ['btn btn-danger btn-sm'],
+            'data-author' => $clasificationId,
+          ],
+        ];
+      }
+    }
+
+    // get authors
+    $clasificationsFormatOptions = ClasificationDAO::getClasificationsSelectFormat(true, 'Seleccione una clasificacion');
+    $form['area_9']['clasifications_fieldset']['clasification_selector'] = [
+      '#type' => 'select2',
+      '#default_value' => '',
+      '#options' => $clasificationsFormatOptions,
+      // '#select2' => [
+      //   'allowClear' => FALSE,
+      // ],
+      '#attributes' => [
+        //define static name and id so we can easier select it
+        //'id' => 'clasification' . $i,
+        'name' => 'clasification_selector',
+      ],
+    ];
+    $form['area_9']['clasifications_fieldset']['actions']['add_clasification'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Agregar clasificacion'),
+      //'#submit' => [$this, 'addAuthor'],
+      '#ajax' => [
+        'callback' => '::addmoreClasificationCallback',
+        'wrapper' => 'clasifications-fieldset-wrapper',
+      ],
+      '#attributes' => [
+        'class' => ['btn btn-success btn-sm'],
+        //'data-clasification' => $key,
+      ],
+      '#states' => [
+        //show this textfield only if the radio 'other' is selected above
+        'invisible' => [
+          //don't mistake :input for the type of field. You'll always use
+          //:input here, no matter whether your source is a select, radio or checkbox element.
+          ':input[name="clasification_selector"]' => ['value' => '0'],
+          ':input[name="clasification_selector"]' => ['value' => ''],
+        ],
+      ],
+    ];
+
     $form['actions'] = [
       '#type' => 'actions',
     ];
@@ -628,6 +716,17 @@ class ItemForm extends FormBase {
 
         unset($selected_authors_list[$authorId]);
         $form_state->set('authors_selected_list', $selected_authors_list);
+      } else if($trigger == 'Agregar clasificacion') {
+        $selected_clasifications_list = $form_state->get('clasifications_selected_list');
+        if(!isset($selected_clasifications_list))
+          $selected_clasifications_list = [];
+        
+        $selected_clasification_id = $form_state->getUserInput()['clasification_selector'];
+        $selected_clasification_data = ClasificationDAO::load($selected_clasification_id);
+        
+
+        array_push($selected_clasifications_list, $selected_clasification_data);
+        $form_state->set('clasifications_selected_list', $selected_clasifications_list);
       }
       // Rebuild the form. This causes buildForm() to be called again before the
       // associated Ajax callback. Allowing the logic in buildForm() to execute
@@ -665,6 +764,15 @@ class ItemForm extends FormBase {
    */
   public function addmoreCallback(array &$form, FormStateInterface $form_state) {
     return $form['area_1']['authors_fieldset'];
+  }
+
+  /**
+   * Callback for both ajax-enabled buttons.
+   *
+   * Selects and returns the fieldset with the names in it.
+   */
+  public function addmoreClasificationCallback(array &$form, FormStateInterface $form_state) {
+    return $form['area_9']['clasifications_fieldset'];
   }
 
 }
