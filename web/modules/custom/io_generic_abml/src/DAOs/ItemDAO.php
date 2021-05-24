@@ -8,9 +8,11 @@ use Drupal\file\Entity\File;
 
 use Drupal\io_generic_abml\DAOs\GenericDAO;
 use Drupal\io_generic_abml\DAOs\InstanceDAO;
+use Drupal\io_generic_abml\DAOs\AuthorDAO;
 
 use Drupal\io_generic_abml\DTOs\ItemDTO;
 use Drupal\io_generic_abml\DTOs\ItemTypeDTO;
+use Drupal\io_generic_abml\DTOs\AuthorDTO;
 use Drupal\io_generic_abml\DTOs\EditorialDTO;
 use Drupal\io_generic_abml\DTOs\AcquisitionConditionDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
@@ -341,36 +343,6 @@ class ItemDAO extends GenericDAO {
     $result = $query->countQuery()->execute()->fetchField();
 
     return $result;
-  }
-
-  /**
-   * Get number of instance from a determined item
-   * @param int $itemId
-   * 
-   * @return $authorList
-   */
-  public static function getAuthorsFromItem($itemId) {
-    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
-      ->fields('a', [
-        'id',
-        'first_name',
-        'last_name','createdon',
-        'updatedon'
-      ]);
-    // Add join to bn_instance table
-    $query->join('bn_item_author', 'ia', 'ia.item_id = ' . self::TABLE_ALIAS . '.id');
-    // Add join to bn_instance_status table
-    $query->join('bn_author', 'a', 'a.id = ia.author_id');
-    $query->condition(self::TABLE_ALIAS . '.id', $itemId, '=');
-    
-    $result = $query->execute()->fetchAll();
-
-    $select_options = [];
-    foreach($result as $key => $row) {
-      $select_options[$row->id] = $row->first_name .', '. $row->last_name;
-    }
-
-    return $select_options;
   }
 
   /**

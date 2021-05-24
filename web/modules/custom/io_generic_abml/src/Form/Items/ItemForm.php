@@ -69,7 +69,12 @@ class ItemForm extends FormBase {
     // Check if we come from edit or new
     if(isset($id) && $id !== 0) {
       $itemDTO = ItemDAO::load($id);
-      $initial_authors_selected_list = ItemDAO::getAuthorsFromItem($itemDTO->getID());
+      if(!$form_state->isRebuilding()) {
+        $initial_authors_selected_list = AuthorDAO::getAuthorsFromItem($itemDTO->getID());
+        $form_state->set('authors_selected_list', $initial_authors_selected_list);
+        $initial_clasifications_selected_list = ClasificationDAO::getClasificationsFromItem($itemDTO->getID());
+        $form_state->set('clasifications_selected_list', $initial_clasifications_selected_list);
+      }
       $isEdit = true;
     }
 
@@ -653,7 +658,7 @@ class ItemForm extends FormBase {
 
       //Clasifications list
       $clasificationsItemsList = $form_state->get('clasifications_selected_list');
-      
+
       // Editoral
       // Check if we have to create a new one
       if($form_state->getUserInput()['editorial_id'] === '-1') {
@@ -733,8 +738,6 @@ class ItemForm extends FormBase {
         $selected_clasification_id = $form_state->getUserInput()['clasification_selector'];
         $selected_clasification_data = ClasificationDAO::load($selected_clasification_id);
 
-
-        //array_push($selected_clasifications_list, [$selected_clasification_data->getId() => $selected_clasification_data]);
         $selected_clasifications_list[$selected_clasification_data->getId()] = $selected_clasification_data;
         $form_state->set('clasifications_selected_list', $selected_clasifications_list);
       } else if($trigger === 'Quitar' && (strpos($triggerName, "Quitar_clasificacion") !== false)) {

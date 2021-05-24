@@ -22,7 +22,9 @@
         "drupal/core-composer-scaffold": "9.1.4",
         "drupal/core-project-message": "^9",
         "drupal/core-recommended": "9.1.4",
-        "drush/drush": "^10.3"
+        "drupal/select2": "^1.13",
+        "drush/drush": "^10.3",
+        "oomphinc/composer-installers-extender": "^2.0"
     },
     "conflict": {
         "drupal/drupal": "*"

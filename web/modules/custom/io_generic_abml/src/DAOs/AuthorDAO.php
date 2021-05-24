@@ -225,6 +225,39 @@ class AuthorDAO extends GenericDAO {
     return $select_options;
   }
 
+  /**
+   * Get number of instance from a determined item
+   * @param int $itemId
+   *
+   * @return $authorList
+   */
+  public static function getAuthorsFromItem($itemId) {
+    $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id', 'first_name', 'last_name', 'picture', 'nationality', 'description', 'status', 'createdon', 'updatedon']);
+
+    // Add join to bn_countries table
+    $query->leftjoin('bn_countries', 'c', 'c.id = a.nationality');
+    $query->fields('c', ['id', 'en_short_name', 'nationality']);
+
+    // Add join to bn_instance table
+    $query->join('bn_item_author', 'ia', 'ia.author_id = ' . self::TABLE_ALIAS . '.id');
+    // Add join to bn_instance_status table
+    $query->join('bn_item', 'i', 'i.id = ia.item_id');
+    $query->condition('i.id', $itemId, '=');
+
+    $result = $query->execute()->fetchAll();
+
+    //Now we have to build the DTO list result.
+    $resultsDTO = [];
+    // DB results iterations
+    foreach ($result as $key => $row) {
+      $entityDTO = AuthorDAO::getAuthorDTOFromRecord($row);
+      // Add element to result array
+      $resultsDTO[$entityDTO->getId()] = $entityDTO;
+    }
+    return $resultsDTO;
+  }
+
   /** Utis methods *********************************************************************************/
   /**
    * Create an AuthorDTO from stdClass from DB Record
