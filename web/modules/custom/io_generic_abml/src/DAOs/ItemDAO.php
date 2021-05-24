@@ -239,7 +239,8 @@ class ItemDAO extends GenericDAO {
   public static function add(array $fieldsItem,
     int $cover_fid = null,
     array $authorsItemsList,
-    array $fieldsEditorial) {
+    array $fieldsEditorial,
+    array $clasificationItemsList) {
 
     // We open the transaction
     $transaction = \Drupal::database()->startTransaction();
@@ -274,7 +275,7 @@ class ItemDAO extends GenericDAO {
         $file_usage->add($file, 'article', 'file', $idNewItem);
       }
 
-      // Link the authors to recently created article
+      // Link the authors to recently created item
       foreach ($authorsItemsList as $key => $author) {
         // Check if we must create a new author
         if($author->getId() === 0) {
@@ -291,6 +292,13 @@ class ItemDAO extends GenericDAO {
         }
 
         Self::LinkAuthorToItem($idNewItem, $idAuthor, $userId);
+
+        // Link clasifications to recently created item
+        if(isset($clasificationItemsList)) {
+          foreach ($clasificationItemsList as $key => $clasification) {
+            Self::LinkClasificationToItem($idNewItem, $clasification->getId(), $userId);
+          }
+        }
       }
 
       return $idNewItem;
@@ -427,6 +435,22 @@ class ItemDAO extends GenericDAO {
       'createdOn' => date("Y-m-d h:m:s"),
     ];
     return \Drupal::database()->insert('bn_item_author')->fields($fields)->execute();
+  }
+
+  /**
+   * To insert a new record into DB.
+   *
+   * @param array $fields
+   *   An array conating the bn_item_clasification data in key value pair.
+   */
+  public static function LinkClasificationToItem(int $idNewItem, int $idClasification, int $userId ) {
+    $fields = [
+      'item_id' => $idNewItem,
+      'clasification_id' => $idClasification,
+      'createdby' => $userId,
+      'createdOn' => date("Y-m-d h:m:s"),
+    ];
+    return \Drupal::database()->insert('bn_item_clasification')->fields($fields)->execute();
   }
 
   /** Utis methods *********************************************************************************/

@@ -651,6 +651,9 @@ class ItemForm extends FormBase {
       // Autors
       $authorsItemsList = $form_state->get('authors_selected_list');
 
+      //Clasifications list
+      $clasificationsItemsList = $form_state->get('clasifications_selected_list');
+      
       // Editoral
       // Check if we have to create a new one
       if($form_state->getUserInput()['editorial_id'] === '-1') {
@@ -692,7 +695,7 @@ class ItemForm extends FormBase {
         'createdby' => $user->id(),
       ];
 
-      ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial);
+      ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
       $this->messenger()->addStatus($this->t('El item %title fue creado satisfactoriamente.', ['%title' => trim(strtoupper($form_state->getUserInput()['area_1']['title']))]));
 
     } else { //Ajax callbacks reactions
