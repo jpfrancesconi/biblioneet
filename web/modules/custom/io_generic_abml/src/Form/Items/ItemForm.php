@@ -175,7 +175,7 @@ class ItemForm extends FormBase {
         $form['area_1']['authors_fieldset']['authors_selected_table'][$authorid]['actions'] = [
           '#type' => 'submit',
           '#value' => 'Quitar', //$deleteButtonValue,
-          '#name' => 'Quitar_' . $key,
+          '#name' => 'Quitar_autor_' . $key,
           '#ajax' => [
             'callback' => '::addmoreCallback',
             'wrapper' => 'authors-fieldset-wrapper',
@@ -484,7 +484,7 @@ class ItemForm extends FormBase {
     $form['area_9']['clasifications_fieldset']['clasifications_selected_table'] = [
       '#type' => 'table',
       //'#caption' => $this->t('Lista de clasificaciones del libro'),
-      '#header' => [$this->t('Clasificacion'), $this->t('')],
+      '#header' => [$this->t('Código'), $this->t('Materia'), $this->t('')],
       //'#rows' => $initial_authors_selected_list,
       '#empty' => $this->t('Seleccione las clasificaciones del item.'),
       //'#description' => $this->t('Estos clasificaciones se vincularan con el libro que esta dando de alta.'),
@@ -498,22 +498,25 @@ class ItemForm extends FormBase {
     if(isset($clasifications_selected_list)) {
       foreach ($clasifications_selected_list as $key => $clasification) {
         $clasificationId = $clasification->getId();
-        
+
         $form['area_9']['clasifications_fieldset']['clasifications_selected_table'][$clasificationId]['clasification_code'] = [
           '#plain_text' => $clasification->getCode(),
+        ];
+        $form['area_9']['clasifications_fieldset']['clasifications_selected_table'][$clasificationId]['clasification_materia'] = [
+          '#plain_text' => $clasification->getMateria(),
         ];
         //$deleteButtonValue = new FormattableMarkup('<i class="far fa-trash-alt '. $key .'"></i>@text', ['@text' => 'Quitar',]);
         $form['area_9']['clasifications_fieldset']['clasifications_selected_table'][$clasificationId]['actions'] = [
           '#type' => 'submit',
           '#value' => 'Quitar', //$deleteButtonValue,
-          '#name' => 'Quitar_' . $clasificationId,
+          '#name' => 'Quitar_clasificacion_' . $clasificationId,
           '#ajax' => [
-            'callback' => '::addmoreCallback',
+            'callback' => '::addmoreClasificationCallback',
             'wrapper' => 'clasifications-fieldset-wrapper',
           ],
           '#attributes' => [
             'class' => ['btn btn-danger btn-sm'],
-            'data-author' => $clasificationId,
+            'data-clasification' => $clasificationId,
           ],
         ];
       }
@@ -536,7 +539,7 @@ class ItemForm extends FormBase {
     ];
     $form['area_9']['clasifications_fieldset']['actions']['add_clasification'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Agregar clasificacion'),
+      '#value' => $this->t('Agregar clasificación'),
       //'#submit' => [$this, 'addAuthor'],
       '#ajax' => [
         'callback' => '::addmoreClasificationCallback',
@@ -608,6 +611,8 @@ class ItemForm extends FormBase {
         if ($newAuthor === "")
           $form_state->setErrorByName('authors_fieldset', $this->t('Debe seleccionar los autores correctamente.'));
       }
+    } else if($trigger === "Agregar clasificación") {
+
     } else {
       if (strlen($formValues['area_1']['title']) < 5 || strlen($formValues['area_1']['title']) > 255) {
         // Set an error for the form element with a key of "title".
@@ -630,6 +635,7 @@ class ItemForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $trigger = (string) $form_state->getTriggeringElement()['#value'];
+    $triggerName = (string) $form_state->getTriggeringElement()['#name'];
     if ($trigger == 'GUARDAR') {
       $user = \Drupal::currentUser();
 
@@ -710,22 +716,29 @@ class ItemForm extends FormBase {
 
         array_push($selected_authors_list, $selected_author_data);
         $form_state->set('authors_selected_list', $selected_authors_list);
-      } else if ($trigger == 'Quitar') {
+      } else if($trigger === 'Quitar' && (strpos($triggerName, "Quitar_autor") !== false)) {
         $selected_authors_list = $form_state->get('authors_selected_list');
         $authorId = $form_state->getTriggeringElement()['#attributes']['data-author'];
 
         unset($selected_authors_list[$authorId]);
         $form_state->set('authors_selected_list', $selected_authors_list);
-      } else if($trigger == 'Agregar clasificacion') {
+      } else if($trigger == 'Agregar clasificación') {
         $selected_clasifications_list = $form_state->get('clasifications_selected_list');
         if(!isset($selected_clasifications_list))
           $selected_clasifications_list = [];
-        
+
         $selected_clasification_id = $form_state->getUserInput()['clasification_selector'];
         $selected_clasification_data = ClasificationDAO::load($selected_clasification_id);
-        
 
-        array_push($selected_clasifications_list, $selected_clasification_data);
+
+        //array_push($selected_clasifications_list, [$selected_clasification_data->getId() => $selected_clasification_data]);
+        $selected_clasifications_list[$selected_clasification_data->getId()] = $selected_clasification_data;
+        $form_state->set('clasifications_selected_list', $selected_clasifications_list);
+      } else if($trigger === 'Quitar' && (strpos($triggerName, "Quitar_clasificacion") !== false)) {
+        $selected_clasifications_list = $form_state->get('clasifications_selected_list');
+        $clasificationId = $form_state->getTriggeringElement()['#attributes']['data-clasification'];
+
+        unset($selected_clasifications_list[$clasificationId]);
         $form_state->set('clasifications_selected_list', $selected_clasifications_list);
       }
       // Rebuild the form. This causes buildForm() to be called again before the
