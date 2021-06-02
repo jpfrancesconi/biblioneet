@@ -1,0 +1,14 @@
+.highlighted {
+  & #block-views-block-portada-block-block-1 {
+    & img {
+      height: 400px;
+      object-fit: cover;
+    }
+    & p {
+      position: absolute;
+      bottom: 40px;
+      background: white;
+      padding: 10px;
+    }
+  }
+}

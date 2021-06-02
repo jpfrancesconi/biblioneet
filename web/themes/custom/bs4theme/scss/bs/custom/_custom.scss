@@ -2,10 +2,17 @@
 @import 'layout/header';
 // Main content
 @import 'layout/content';
+// Main content
+@import 'layout/highlighted';
+// Main content
+@import 'layout/footer';
+
 // Main front page
 @import 'pages/frontpage';
 // Components
 @import 'components/fieldset';
+// Components Serach Form
+@import 'components/search_form';
 
 // Pages *******************************************************************************
 // Authors *****************

@@ -1,0 +1,8 @@
+form.items-search-form, form.author-search-form {
+  display: flex;
+
+  & .input-group {
+    width: fit-content;
+    height: fit-content;
+  }
+}

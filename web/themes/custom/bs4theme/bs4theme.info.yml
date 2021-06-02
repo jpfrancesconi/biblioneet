@@ -8,6 +8,7 @@ base theme: bootstrap_barrio
 libraries:
   - bs4theme/bootstrap
   - bs4theme/global-styling
+  - bs4theme/Roboto
 
 regions:
   top_header: 'Top header'

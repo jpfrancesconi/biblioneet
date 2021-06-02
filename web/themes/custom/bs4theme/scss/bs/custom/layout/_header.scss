@@ -26,9 +26,12 @@
       }
     }
     // Menu navigation
-    #block-bs4theme-main-menu {
-      display: none;
-    }
+    // #block-bs4theme-main-menu {
+    // #block-navegacionprincipal {
+    //   display: none;
+    // }
+
+
   }
 }
 
@@ -65,6 +68,18 @@
         }
       }
     }
+    // Menu navigation
+    //#block-bs4theme-main-menu {
+    & #block-navegacionprincipal {
+      display: block;
+      & ul {
+        display: flex;
+        flex-direction: row;
+        & li {
+          padding: 5px;
+        }
+      }
+    }
   }
 }
 
@@ -72,6 +87,11 @@
   .header {
     & .navbar-toggler.navbar-toggler-right {
       display: none;
+    }
+
+    & #navbarSupportedContent {
+      display: flex;
+      justify-content: flex-end;
     }
   }
 }
