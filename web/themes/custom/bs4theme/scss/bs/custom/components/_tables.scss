@@ -1,0 +1,16 @@
+.io-table-sm {
+    & thead>tr {
+        background: #5996d4; 
+    }
+    & tbody>tr.odd {
+        background: #b8d8f9; 
+    }
+    & tbody>tr .other {
+        background: #fff; 
+    }
+
+    & tbody>tr>td:last-child {
+        width: 1%;
+        white-space: nowrap;
+    }
+}

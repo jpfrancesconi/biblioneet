@@ -64,7 +64,7 @@ class ItemInstancesTableForm implements FormInterface {
       '#empty' => t('La lista está vacía'),
       '#attributes' => [
         'id' => 'table',
-        'class' => ['table-sm']
+        'class' => ['table-sm', 'io-table-sm']
       ],
     ];
 

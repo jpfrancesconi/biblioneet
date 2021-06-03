@@ -75,6 +75,10 @@ class ItemForm extends FormBase {
         $initial_clasifications_selected_list = ClasificationDAO::getClasificationsFromItem($itemDTO->getID());
         $form_state->set('clasifications_selected_list', $initial_clasifications_selected_list);
       }
+      $form['iid'] = [
+        '#type' => 'hidden',
+        '#value' => $itemDTO->getId(),
+      ];
       $isEdit = true;
     }
 
@@ -147,7 +151,7 @@ class ItemForm extends FormBase {
       //'#description' => $this->t('Estos autores se vincularan con el libro que esta dando de alta.'),
       '#attributes' => [
         'id' => 'table',
-        'class' => ['table-sm']
+        'class' => ['table-sm', 'io-table-sm']
       ],
     ];
     // fill table with selected authors
@@ -495,7 +499,7 @@ class ItemForm extends FormBase {
       //'#description' => $this->t('Estos clasificaciones se vincularan con el libro que esta dando de alta.'),
       '#attributes' => [
         'id' => 'table_clasifications',
-        'class' => ['table-sm']
+        'class' => ['table-sm', 'io-table-sm']
       ],
     ];
 
@@ -642,7 +646,10 @@ class ItemForm extends FormBase {
     $trigger = (string) $form_state->getTriggeringElement()['#value'];
     $triggerName = (string) $form_state->getTriggeringElement()['#name'];
     if ($trigger == 'GUARDAR') {
+      // Get current user operator
       $user = \Drupal::currentUser();
+      // Get item ID if is edit case
+      $iid = $form_state->getValue('iid');
 
       // Cover image
       $image = $form_state->getUserInput()['area_9']['upload']['cover'];
@@ -700,8 +707,40 @@ class ItemForm extends FormBase {
         'createdby' => $user->id(),
       ];
 
-      ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
-      $this->messenger()->addStatus($this->t('El item %title fue creado satisfactoriamente.', ['%title' => trim(strtoupper($form_state->getUserInput()['area_1']['title']))]));
+      if (!empty($iid) && ItemDAO::exists($iid)) {
+        $item = ItemDAO::load($iid);
+        if ($cover_fid) {
+          if ($cover_fid !== $item->cover) {
+            file_delete($item->cover);
+            $file = File::load($cover_fid);
+            $file->setPermanent();
+            $file->save();
+            $file_usage->add($file, 'item', 'file', $iid);
+          }
+        } else {
+          if($item->getCover())
+            file_delete($item->getCover());
+        }
+        // Set Updated auditory fields
+        $fieldsItem['updatedby'] = $user->id();
+        $fieldsItem['updatedon'] = date("Y-m-d h:m:s");
+  
+        ItemDAO::update($iid, $fieldsItem, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
+        $message = 'El item '. trim(strtoupper($form_state->getUserInput()['area_1']['title'])) .' fue actualizado satisfactoriamente.';
+      } else {
+        // is a new item case
+        ItemDAO::add($fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
+        // if ($cover_fid) {
+        //   $file = File::load($cover_fid);
+        //   $file->setPermanent();
+        //   $file->save();
+        //   $file_usage->add($file, 'item', 'file', $newItemID);
+        // }
+        // $this->dispatchEmployeeWelcomeMailEvent($new_employee_id);
+        $message = 'El item '. trim(strtoupper($form_state->getUserInput()['area_1']['title'])) .' fue creado satisfactoriamente.';
+      }
+
+      $this->messenger()->addStatus($message);
 
     } else { //Ajax callbacks reactions
       if ($trigger == 'Agregar autor') {

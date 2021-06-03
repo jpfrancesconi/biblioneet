@@ -720,6 +720,8 @@ $settings['trusted_host_patterns'] = [
   '^192.168.0.9$',
   '^192.168.0.*$',
   '^192.168.1.113$',
+  '^192.168.1.102$',
+  '^192.168.1.*$',
 ];
 /**
  * The default list of directories that will be ignored by Drupal's file API.

@@ -173,6 +173,99 @@ class ItemDAO extends GenericDAO {
   }
 
   /**
+   * To check if an author is valid.
+   *
+   * @param int $id
+   *   The item ID.
+   */
+  public static function exists($id) {
+    $result = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
+      ->fields(self::TABLE_ALIAS, ['id'])
+      ->condition('id', $id, '=')
+      ->execute()
+      ->fetchField();
+    return (bool) $result;
+  }
+
+  /**
+   * To update an existing record.
+   *
+   * @param int $id
+   *   The item ID.
+   * @param array $fields
+   *   An array conating the author data in key value pair.
+   */
+  public static function update($id, array $fieldsItem,
+    array $authorsItemsList,
+    array $fieldsEditorial,
+    array $clasificationItemsList) {
+    
+      // We open the transaction
+    $transaction = \Drupal::database()->startTransaction();
+
+    try {
+      // Editorial
+      // We need to create a new one?
+      if($fieldsEditorial['id'] === -1) {
+        unset($fieldsEditorial['id']);
+        $newEditorialId = EditorialDAO::add($fieldsEditorial);
+        // Set new Editorial to item
+        $fieldsItem['editorial_id'] = $newEditorialId;
+      } else if($fieldsEditorial['id'] === "" || $fieldsEditorial['id'] === "0") {
+        // Set new Editorial to item
+        $fieldsItem['editorial_id'] = null;
+      } else {
+        // Set Editorial seleted to item
+        $fieldsItem['editorial_id'] = $fieldsEditorial['id'];
+      }
+      $userId = $fieldsItem['createdby'];
+
+      \Drupal::database()->update(self::TABLE_NAME)->fields($fieldsItem)
+        ->condition('id', $id)
+        ->execute();
+
+      // Remove items authors relationships
+      Self::UnlinkAuthorToItem($id);
+      // Link the authors to recently created item
+      foreach ($authorsItemsList as $key => $author) {
+        // Check if we must create a new author
+        if($author->getId() === 0) {
+          $authorFields = [
+            'first_name' => $author->getFirstName(),
+            'last_name' => $author->getLastName(),
+            'status' => 1,
+            'createdBy' => $userId,
+            'createdOn' => date("Y-m-d h:m:s"),
+          ];
+          $idAuthor = AuthorDAO::add($authorFields);
+        } else {
+          $idAuthor = $author->getId();
+        }
+
+        Self::LinkAuthorToItem($id, $idAuthor, $userId);        
+      }
+
+      // Remove items authors relationships
+      Self::UnlinkClasificationToItem($id);
+      // Link clasifications to recently created item
+      if(isset($clasificationItemsList)) {
+        foreach ($clasificationItemsList as $key => $clasification) {
+          Self::LinkClasificationToItem($id, $clasification->getId(), $userId);
+        }
+      }
+    } catch (Exception $e) {
+      $transaction->rollBack();
+      watchdog_exception('io_generics_abml.add_article', $e);
+    }
+
+    // You can let $transaction go out of scope here and the transaction will
+    // automatically be committed if it wasn't already rolled back.
+    // However, if you have more work to do, you will want to commit the transaction
+    // yourself, like this:
+    unset($transaction);
+  }
+
+  /**
    * To load an Item record.
    *
    * @param int $id
@@ -259,7 +352,7 @@ class ItemDAO extends GenericDAO {
         // Set new Editorial to item
         $fieldsItem['editorial_id'] = null;
       } else {
-        // Set new Editorial to item
+        // Set Editorial seleted to item
         $fieldsItem['editorial_id'] = $fieldsEditorial['id'];
       }
 
@@ -293,19 +386,18 @@ class ItemDAO extends GenericDAO {
           $idAuthor = $author->getId();
         }
 
-        Self::LinkAuthorToItem($idNewItem, $idAuthor, $userId);
+        Self::LinkAuthorToItem($idNewItem, $idAuthor, $userId);        
+      }
 
-        // Link clasifications to recently created item
-        if(isset($clasificationItemsList)) {
-          foreach ($clasificationItemsList as $key => $clasification) {
-            Self::LinkClasificationToItem($idNewItem, $clasification->getId(), $userId);
-          }
+      // Link clasifications to recently created item
+      if(isset($clasificationItemsList)) {
+        foreach ($clasificationItemsList as $key => $clasification) {
+          Self::LinkClasificationToItem($idNewItem, $clasification->getId(), $userId);
         }
       }
 
       return $idNewItem;
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       $transaction->rollBack();
       watchdog_exception('io_generics_abml.add_article', $e);
     }
@@ -410,6 +502,16 @@ class ItemDAO extends GenericDAO {
   }
 
   /**
+   * To delete relationships between authors and an item
+   *
+   * @param int $id
+   *   Item ID
+   */
+  public static function UnlinkAuthorToItem(int $idItem) {
+    return \Drupal::database()->delete('bn_item_author')->condition('item_id', $idItem)->execute();
+  }
+
+  /**
    * To insert a new record into DB.
    *
    * @param array $fields
@@ -423,6 +525,16 @@ class ItemDAO extends GenericDAO {
       'createdOn' => date("Y-m-d h:m:s"),
     ];
     return \Drupal::database()->insert('bn_item_clasification')->fields($fields)->execute();
+  }
+
+  /**
+   * To delete relationships between clasification and an item
+   *
+   * @param int $id
+   *   Item ID
+   */
+  public static function UnlinkClasificationToItem(int $idItem) {
+    return \Drupal::database()->delete('bn_item_clasification')->condition('item_id', $idItem)->execute();
   }
 
   /** Utis methods *********************************************************************************/

@@ -245,6 +245,9 @@ class AuthorDAO extends GenericDAO {
     $query->join('bn_item', 'i', 'i.id = ia.item_id');
     $query->condition('i.id', $itemId, '=');
 
+    // Get crator username
+    $query = parent::addAuditFields($query, self::TABLE_ALIAS);
+
     $result = $query->execute()->fetchAll();
 
     //Now we have to build the DTO list result.

@@ -84,6 +84,8 @@ class ClasificationDAO extends GenericDAO {
         'id',
         'code',
         'materia',
+        'status',
+        'createdon',
         'updatedon'
       ]);
     // Add join to bn_item_clasification table
@@ -91,6 +93,9 @@ class ClasificationDAO extends GenericDAO {
     // Add join to bn_instance_status table
     $query->join('bn_item', 'i', 'i.id = ic.item_id');
     $query->condition('i.id', $itemId, '=');
+
+    // Add the audit fields to the query.
+    $query =  parent::addAuditFields($query, self::TABLE_ALIAS);
 
     $result = $query->execute()->fetchAll();
 
