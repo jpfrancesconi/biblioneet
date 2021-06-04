@@ -169,3 +169,37 @@ io_generic_abml.items.indexes.add:
     parameters:
       idItem:
         type: int
+      
+io_generic_abml.items.indexes.edit:
+  path: '/items/indexes/{idItem}/edit/{js}/{idIndex}'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\IndexController::edit'
+    localizacion_id: '0'
+    js: 'no_js'
+  requirements:
+    _permission: 'add index'
+  options:
+    parameters:
+      idItem:
+        type: int
+      idIndex:
+        type: int
+    
+io_generic_abml.items.indexes.delete:
+  path: '/items/indexes/delete/{idIndex}'
+  defaults:
+    _form: '\Drupal\io_generic_abml\Form\Index\IndexDeleteForm'
+    _title: 'Eliminar Indice'
+  requirements:
+    _permission: 'add index'
+  options:
+    parameters:
+      idIndex:
+        type: int
+
+io_generic_abml.items.indexes.delete.getmodal:
+  path: '/items/indexes/{idIndex}/delete/{js}'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\IndexController::getDeleteModalForm'
+  requirements:
+    _permission: 'add index'

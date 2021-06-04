@@ -1,0 +1,13 @@
+a.tabledrag-handle {
+    & div.handle {
+        width: 25px;
+        height: 25px;
+    }
+}
+  
+.tabledrag-changed-warning.messages.messages--warning {
+    background-color: #f6ff294d;
+    padding: 5px;
+    border: solid 1px #ccc;
+    margin-top: 5px;
+}

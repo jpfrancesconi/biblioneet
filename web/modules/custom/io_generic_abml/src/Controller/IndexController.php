@@ -3,9 +3,9 @@
 namespace Drupal\io_generic_abml\Controller;
 
 use Drupal;
-
-use Drupal\file\Entity\File;
 use Drupal\Core\Url;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\file\Entity\File;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -61,5 +61,37 @@ class IndexController extends GenericABMLController {
         $content['#attached'] = ['library' => ['core/drupal.dialog.ajax']];
 
         return $content;
+    }
+
+     /**
+     * Callback for opening the Index Edit Form
+     */
+    public function edit($idItem, $idIndex, $js) {
+        $editForm = $this->formBuilder->getForm('Drupal\io_generic_abml\Form\Index\IndexForm', $idItem, $idIndex); 
+        // Check if we have to use modal or not
+        if($js == 'ajax') {
+            $response = new AjaxResponse();
+            $indiceDTO = IndexDAO::load($idIndex);
+            $response->addCommand(new OpenModalDialogCommand('Editar Indice: '.$indiceDTO->getId() , $editForm, ['width' => '800px']));
+            return $response;
+        } else {
+            return $editForm;
+        }
+    }
+
+    /**
+     * Callback for opening the Index delete form in modal.
+     */
+    public function getDeleteModalForm($idIndex, $js) {
+        $deleteForm = $this->formBuilder->getForm('Drupal\io_generic_abml\Form\Index\IndexDeleteForm', $idIndex);
+        // Check if we have to use modal or not
+        if($js == 'ajax') {
+            $response = new AjaxResponse();
+            $indexDTO = IndexDAO::load($idIndex);
+            $response->addCommand(new OpenModalDialogCommand('Eliminar Indice: '.$indexDTO->getId() , $deleteForm, ['width' => '800px']));
+            return $response;
+        } else {
+            return $deleteForm;
+        }
     }
 }

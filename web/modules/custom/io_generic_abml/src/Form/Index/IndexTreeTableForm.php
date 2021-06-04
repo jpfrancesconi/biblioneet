@@ -38,6 +38,11 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
         // attach library to open modals
         $form['#attached'] = ['library' => ['core/drupal.dialog.ajax']];
 
+        $form['itid'] = [
+            '#type' => 'hidden',
+            '#value' => $id,
+        ];
+
         $form['table-row'] = [
             '#type' => 'table',
             '#header' => [
@@ -84,7 +89,7 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
                   'data-dialog-options' => ['width' => 700, 'height' => 400],
                 ],
             ];
-            $editUrl = Url::fromRoute('io_generic_abml.items.indexes.add', ['idItem' => $indexDTO->getId(), 'js' => 'no_js'], [
+            $editUrl = Url::fromRoute('io_generic_abml.items.indexes.edit', ['idItem' => $indexDTO->getItem()->getId(), 'idIndex' => $indexDTO->getId(), 'js' => 'no_js'], [
                 'attributes' => [
                   'class' => '',
                   'data-dialog-type' => 'modal',
@@ -94,8 +99,8 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
             $quickEditLink = \Drupal::service('link_generator')->generate(t('<i class="fas fa-edit"></i>'), $editUrl);
     
             // prepare delete link
-            //$deletetUrl = Url::fromRoute('io_equipos_locs.localizaciones.delete.getmodal', ['localizacion_id' => $indexDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
-            //$deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
+            $deletetUrl = Url::fromRoute('io_generic_abml.items.indexes.delete.getmodal', ['idIndex' => $indexDTO->getId(), 'js' => 'ajax'], $ajax_link_attributes);
+            $deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
     
             // TableDrag: Mark the table row as draggable.
             $form['table-row'][$indexDTO->getId()]['#attributes']['class'][] = 'draggable';
@@ -134,7 +139,7 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
 
             // Some table columns containing raw markup.
             if(IndexDAO::esHoja($indexDTO->getId())){
-                $operationLinks = t('@linkEdit @linkDelete', array('@linkEdit' => $quickEditLink, '@linkDelete' => null));
+                $operationLinks = t('@linkEdit @linkDelete', array('@linkEdit' => $quickEditLink, '@linkDelete' => $deleteLink));
             } else {
                 if ($indexDTO->getIndexPadre() == null) {
                     $operationLinks = t('');
@@ -184,6 +189,7 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
         $form['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => $this->t('Guardar los cambios'),
+        '#attributes' => ['class' => ['btn', 'btn-success']],
         ];
         $form['actions']['cancel'] = [
         '#type' => 'submit',
@@ -192,6 +198,7 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
             'title' => $this->t('Return to TableDrag Overview'),
         ],
         '#submit' => ['::cancel'],
+        '#attributes' => ['class' => ['btn', 'btn-danger']],
         ];
 
         return $form;
@@ -206,7 +213,8 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
      *   The current state of the form.
      */
     public function cancel(array &$form, FormStateInterface $form_state) {
-        $form_state->setRedirect('io_generic_abml.items.indexes.list', ['id' => 4]);
+        $idItem = $form_state->getValue('itid');
+        $form_state->setRedirect('io_generic_abml.items.indexes.list', ['id' => $idItem]);
     }
 
     /**
@@ -220,8 +228,8 @@ class IndexTreeTableForm extends FormBase implements FormInterface {
     public function submitForm(array &$form, FormStateInterface $form_state) {
         // Because the form elements were keyed with the item ids from the database,
         // we can simply iterate through the submitted values.
-        //$submissions = $form_state->getValue('table-row');
-        //LocalizacionDAO::updateLocalizacionTree($submissions);
+        $submissions = $form_state->getValue('table-row');
+        IndexDAO::updateIndexTree($submissions);
     }
 
 }

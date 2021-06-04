@@ -117,12 +117,13 @@ class IndexForm extends FormBase implements FormInterface {
     $form['actions']['submit'] = [
       '#type'   => 'submit',
       '#value'  => 'Guardar',
+      '#attributes' => ['class' => ['btn', 'btn-success']],
     ];
 
     $form['actions']['cancel'] = [
       '#type'       => 'link',
-      '#title'      => 'Cancelar',
-      '#attributes' => ['class' => ['button', 'button--primary']],
+      '#title'      => 'Volver',
+      '#attributes' => ['class' => ['btn', 'btn-danger']],
       '#url'        => Url::fromRoute('io_generic_abml.items.indexes.list', ['id' => $idItem]),
     ];
 
@@ -152,12 +153,12 @@ class IndexForm extends FormBase implements FormInterface {
     $fields = [
       'content' => $form_state->getValue('content'),
       'number' => $form_state->getValue('number'),
-      'index_id' => $idIndex,
+      'index_id' => $form_state->getValue('index_id'),
       'item_id' => $idItem,
       'peso' => 0,
       'createdby' => $user->id(),
     ];
-    if (!empty($id) && IndexDAO::exists($id)) {
+    if (!empty($idIndex) && IndexDAO::exists($idIndex)) {
       //$indexDTO = IndexDAO::load($id);
 
       // Set Updated auditory fields

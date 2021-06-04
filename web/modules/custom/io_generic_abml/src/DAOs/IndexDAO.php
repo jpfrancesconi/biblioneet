@@ -197,12 +197,12 @@ class IndexDAO extends GenericDAO {
    * @param array $sumbission
    *   Form table with rows: each row is a Localizacion
    */
-  public static function updateLocalizacionTree($items) { 
+  public static function updateIndexTree($items) { 
     foreach ($items as $id => $item) {
-      \Drupal::database()->update('io_localizacion')
+      \Drupal::database()->update(self::TABLE_NAME)
           ->fields([
           'peso' => $item['weight'],
-          'localizacion_id' => (($item['pid'] != null && $item['pid'] != '') ? $item['pid'] : null),
+          'index_id' => (($item['pid'] != null && $item['pid'] != '') ? $item['pid'] : null),
           ])
           ->condition('id', $id, '=')
           ->execute();
@@ -305,7 +305,7 @@ class IndexDAO extends GenericDAO {
     if(isset($row->item_id)){
         $itemDTO = new ItemDTO();
         $itemDTO->setId($row->item_id);
-        $indexDTO->setIndexPadre($itemDTO);
+        $indexDTO->setItem($itemDTO);
     }
 
     // set audit fields

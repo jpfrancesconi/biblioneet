@@ -62,7 +62,7 @@ class ItemsSearchForm implements FormInterface {
       '#attributes' => [
         'class' => [
           'form-actions',
-          'btn', 'btn-primary',
+          'btn', 'btn-success',
         ],
       ],
     ];
