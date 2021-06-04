@@ -70,3 +70,16 @@ delete instance:
   title: 'Delete instance'
   description: 'Delete an instance'
   restrict access: true
+
+# BEGIN: ABML Index ###########################################################################
+list index:
+  title: 'Manage Index records'
+  description: 'View, add, edit and delete index records'
+  restrict access: true
+  warning: 'Please take care with this permission.'
+
+add index:
+  title: 'Add new Index records'
+  description: 'Add new index records'
+  restrict access: true
+  warning: 'Please take care with this permission.'

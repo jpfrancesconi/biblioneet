@@ -33,6 +33,13 @@ class ItemInstancesTableForm implements FormInterface {
     global $base_url;
 
     //$form = parent::buildForm($form, $form_state);
+    if(isset($id)) {
+      $itemDTO = ItemDAO::load($id);
+      $form['title'] = [
+        '#type' => 'markup',
+        '#markup' => '<h4>Gestionando existencias del item: '. $itemDTO->getTitle() .' </h4>',
+      ];
+    }
 
     // Table header.
     $header = [

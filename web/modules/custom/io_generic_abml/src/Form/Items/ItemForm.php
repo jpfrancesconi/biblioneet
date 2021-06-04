@@ -589,6 +589,12 @@ class ItemForm extends FormBase {
         '#attributes' => ['class' => ['btn', 'btn-primary', 'btn-sm']],
         '#url' => Url::fromRoute('io_generic_abml.items.instances.list', ['id' => $itemDTO->getId()]),
       ];
+      $form['actions']['index'] = [
+        '#type' => 'link',
+        '#title' => 'INDICE',
+        '#attributes' => ['class' => ['btn', 'btn-primary', 'btn-sm']],
+        '#url' => Url::fromRoute('io_generic_abml.items.indexes.list', ['id' => $itemDTO->getId()]),
+      ];
     }
 
     $form['actions']['cancel'] = [

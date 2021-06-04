@@ -118,7 +118,7 @@ io_generic_abml.items.instances.list:
   path: '/items/instances/{id}/list'
   defaults:
     _controller: '\Drupal\io_generic_abml\Controller\InstancesController::listInstancesByItem'
-    _title: 'Gestion de Existencias'
+    _title: ''
   requirements:
     _permission: 'manage item instances'
   options:
@@ -148,4 +148,24 @@ io_generic_abml.items.instances.delete:
   options:
     parameters:
       id:
+        type: int
+
+# Indexes
+io_generic_abml.items.indexes.list:
+  path: '/items/indexes/{id}/list'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\IndexController::listIndexByItem'
+  requirements:
+    _permission: 'list index'
+
+io_generic_abml.items.indexes.add:
+  path: '/items/indexes/{idItem}/add'
+  defaults:
+    _form: '\Drupal\io_generic_abml\Form\Index\IndexForm'
+    _title: 'Crear nueva entrada de indice'
+  requirements:
+    _permission: 'add index'
+  options:
+    parameters:
+      idItem:
         type: int
