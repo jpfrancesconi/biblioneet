@@ -77,12 +77,12 @@ class IndexDAO extends GenericDAO {
 //   }
 
   /**
-   * To load an io_localizacion record.
+   * To load an index record.
    *
    * @param int $id
-   *   The localizacion ID.
+   *   The index ID.
    */
-  public static function load($idItem) {
+  public static function load($idIndex) {
     $query = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS)
     ->fields(self::TABLE_ALIAS, ['id', 'content', 'number', 'index_id', 'item_id', 'peso', 'createdon', 'updatedon']);
     // Add the audit fields to the query.
@@ -90,9 +90,9 @@ class IndexDAO extends GenericDAO {
     //$query->condition(self::TABLE_ALIAS. '.item_id', $idItem, '=');
 
     // Join with index table
-    $query->leftJoin('bn_index', 'indpad', 'indpad.id = ind.index_id');
+    $query->leftJoin(self::TABLE_NAME, 'indpad', 'indpad.id = '.self::TABLE_ALIAS.'.index_id');
 
-    $result = $query->condition('ind.id', $idItem, '=')->execute()->fetchObject();
+    $result = $query->condition(self::TABLE_ALIAS.'.id', $idIndex, '=')->execute()->fetchObject();
     $indexDTO = IndexDAO::getIndexDTOFromRecord($result);
     
     return $indexDTO;

@@ -1,0 +1,14 @@
+.container-items {
+    & .container-item-row {
+        border: solid 1px #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0px 0px 10px 1px #ccc;
+        & .container-item-col {
+            display: flex;
+            & .container-item-col-body {
+                padding-left: 10px;
+            }
+        }
+    }
+}

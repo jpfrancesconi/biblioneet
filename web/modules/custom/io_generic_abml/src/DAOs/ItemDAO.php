@@ -17,6 +17,7 @@ use Drupal\io_generic_abml\DTOs\EditorialDTO;
 use Drupal\io_generic_abml\DTOs\AcquisitionConditionDTO;
 use Drupal\io_generic_abml\DTOs\UserDTO;
 
+use \Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * DAO class for item entity.
@@ -94,6 +95,24 @@ class ItemDAO extends GenericDAO {
           # TODOS
           // If $search_key is not null means that need to add the where condition.
           if (!is_null($search_item)) {
+            // -- Recuperar item por cualquier criterio
+            // -- datos del item o autores o materia
+            // SELECT it.id, it.title
+            // FROM bn_item it
+            // WHERE it.title LIKE '%LITERATURA%'
+            // OR it.id IN (
+            //       SELECT it2.id FROM bn_item it2
+            //             JOIN bn_item_author ia2 ON ia2.item_id = it2.id
+            //             JOIN bn_author a2 ON a2.id = ia2.author_id
+            //             WHERE a2.first_name LIKE '%LITERATURA%' OR a2.last_name LIKE '%LITERATURA%'
+            //       )
+            // OR it.id IN (
+            //       SELECT it3.id FROM bn_item it3
+            //             JOIN bn_item_clasification ic3 ON ic3.item_id = it3.id
+            //             JOIN bn_clasification c3 ON c3.id = ic3.clasification_id
+            //             WHERE c3.code LIKE '%LITERATURA%' OR c3.materia LIKE '%LITERATURA%'
+            //       );
+                        
             // Add LEFT JOIN to bn_item_author table
             $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
             // Add LEFT JOIN to bn_author table
@@ -112,8 +131,10 @@ class ItemDAO extends GenericDAO {
           # TITULO
           // If $search_key is not null means that need to add the where condition.
           if (!is_null($search_item)) {
-            $query->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_item) . "%", 'LIKE')
+            $group = $query->orConditionGroup()
+            ->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_item) . "%", 'LIKE')
             ->condition(self::TABLE_ALIAS . '.parallel_title', "%" . Html::escape($search_item) . "%", 'LIKE');
+            $query->condition($group);
           }
           break;
 
@@ -133,6 +154,25 @@ class ItemDAO extends GenericDAO {
 
         case '3':
           # MATERIA
+          // Relation between bn_item and bn?clasification throught bn_item_clasifiation table
+          /**
+           * SELECT it.id, it.title, c.id, c.materia 
+           *   FROM biblioneet_dev.bn_item it
+           *   JOIN biblioneet_dev.bn_item_clasification ic ON ic.item_id = it.id
+           *   JOIN biblioneet_dev.bn_clasification c ON ic.clasification_id = c.id
+           *   WHERE c.code LIKE '%82%' OR c.materia LIKE '%82%';
+           *  */ 
+          if (!is_null($search_item)) {
+            // Add JOIN to bn_item_clasification table
+            $query->join('bn_item_clasification', 'ite_cla', 'ite_cla.item_id = ' . self::TABLE_ALIAS . '.id');
+            // Add JOIN to bn_item_clasification table
+            $query->join('bn_clasification', 'cla', 'cla.id = ite_cla.clasification_id');
+            // Add or conditions
+            $group = $query->orConditionGroup()
+              ->condition('cla.code', "%" . Html::escape($search_item) . "%", 'LIKE')
+              ->condition('cla.materia', "%" . Html::escape($search_item) . "%", 'LIKE');
+            $query->condition($group);
+          }
           break;
 
         case '4':
@@ -196,6 +236,7 @@ class ItemDAO extends GenericDAO {
    *   An array conating the author data in key value pair.
    */
   public static function update($id, array $fieldsItem,
+    int $cover_fid = null,
     array $authorsItemsList,
     array $fieldsEditorial,
     array $clasificationItemsList) {
@@ -204,6 +245,28 @@ class ItemDAO extends GenericDAO {
     $transaction = \Drupal::database()->startTransaction();
 
     try {
+      $item = ItemDAO::load($id);
+      $controller = \Drupal::entityTypeManager()->getStorage('file');
+      $file_usage = Drupal::service('file.usage');
+      if ($cover_fid) {
+        if ($cover_fid !== $item->getCover()) {
+          if($item->getCover()) {
+            $fileDelete = File::load($item->getCover());
+            $controller->delete([$fileDelete]);
+          }
+
+          $file = File::load($cover_fid);
+          $file->setPermanent();
+          $file->save();
+          $file_usage->add($file, 'article', 'file', $id);
+        }
+      } else {
+        if($item->getCover()) {
+          $fileDelete = File::load($item->getCover());
+          $controller->delete([$fileDelete]);
+        }
+      }
+
       // Editorial
       // We need to create a new one?
       if($fieldsEditorial['id'] === -1) {

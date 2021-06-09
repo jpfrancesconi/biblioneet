@@ -714,24 +714,24 @@ class ItemForm extends FormBase {
       ];
 
       if (!empty($iid) && ItemDAO::exists($iid)) {
-        $item = ItemDAO::load($iid);
-        if ($cover_fid) {
-          if ($cover_fid !== $item->cover) {
-            file_delete($item->cover);
-            $file = File::load($cover_fid);
-            $file->setPermanent();
-            $file->save();
-            $file_usage->add($file, 'item', 'file', $iid);
-          }
-        } else {
-          if($item->getCover())
-            file_delete($item->getCover());
-        }
+        //$item = ItemDAO::load($iid);
+        // if ($cover_fid) {
+        //   if ($cover_fid !== $item->getCover()) {
+        //     file_delete($item->getCover());
+        //     $file = File::load($cover_fid);
+        //     $file->setPermanent();
+        //     $file->save();
+        //     $file_usage->add($file, 'item', 'file', $iid);
+        //   }
+        // } else {
+        //   if($item->getCover())
+        //     file_delete($item->getCover());
+        // }
         // Set Updated auditory fields
         $fieldsItem['updatedby'] = $user->id();
         $fieldsItem['updatedon'] = date("Y-m-d h:m:s");
   
-        ItemDAO::update($iid, $fieldsItem, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
+        ItemDAO::update($iid, $fieldsItem, $cover_fid, $authorsItemsList, $fieldsEditorial, $clasificationsItemsList);
         $message = 'El item '. trim(strtoupper($form_state->getUserInput()['area_1']['title'])) .' fue actualizado satisfactoriamente.';
       } else {
         // is a new item case

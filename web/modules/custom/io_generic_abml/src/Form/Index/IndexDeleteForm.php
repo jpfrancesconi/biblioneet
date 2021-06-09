@@ -17,6 +17,7 @@ use Drupal\io_generic_abml\DAOs\IndexDAO;
 class IndexDeleteForm extends ConfirmFormBase {
     
   protected $idIndex;
+  protected $idItem;
 
   /**
    * {@inheritdoc}
@@ -43,14 +44,15 @@ class IndexDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelRoute() {
-    return new Url('io_generic_abml.items.indexes.list', ['id' => $idItem]);
+    //return new Url('io_generic_abml.items.indexes.list', ['id' => $this->idItem]);
+    return Url::fromRoute('io_generic_abml.items.indexes.list', ['id' => $this->$idItem]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('io_generic_abml.items.indexes.list', ['id' => $idItem]);
+    //return new Url('io_generic_abml.items.indexes.list', ['id' => $this->idItem]);
   }
 
   /**
@@ -68,8 +70,14 @@ class IndexDeleteForm extends ConfirmFormBase {
       //drupal_set_message(t('Invalid employee record'), 'error');
       \Drupal::messenger()->addError('Registro invalido');
       //return new RedirectResponse(Url::fromRoute('localizaio_equipos_locs.localizaciones.listcion')->toString());
+      $indexDTO = IndexDAO::load($idIndex);
+      $this->idItem = $indexDTO->getItem()->getId();
+      $form['itid'] = [
+        '#type' => 'hidden',
+        '#value' => $indexDTO->getItem()->getId(),
+      ];
     }
-    $this->id = $id;
+    $this->idIndex = $idIndex;
     $f = parent::buildForm($form, $form_state);
     // Need to check if we can delete this record
     if(true) {
@@ -86,12 +94,13 @@ class IndexDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $itemDTO = IndexDAO::load($this->idIndex);
-    $idItem = $itemDTO->getId();
+    $idIndex = IndexDAO::load($this->idIndex);
+    $idItem = $idIndex->getItem()->getId();
 
     IndexDAO::delete($this->idIndex);
+    
     //drupal_set_message(t('Employee %id has been deleted.', ['%id' => $this->id]));
-    \Drupal::messenger()->addStatus(t('El indice %id ha sido eliminado.', ['%id' => $this->id]));
+    \Drupal::messenger()->addStatus(t('El indice %id ha sido eliminado.', ['%id' => $this->idIndex]));
     $form_state->setRedirect('io_generic_abml.items.indexes.list', ['id' => $idItem]);
   }
 }

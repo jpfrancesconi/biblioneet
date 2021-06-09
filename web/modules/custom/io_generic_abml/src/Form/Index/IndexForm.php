@@ -150,10 +150,18 @@ class IndexForm extends FormBase implements FormInterface {
     $idIndex = $form_state->getValue('ixid');
     $idItem = $form_state->getValue('itid');
 
+    $index_id = $form_state->getValue('index_id');
+    if($index_id === "" || $index_id === 0)
+      $index_id = null;
+    
+    $number = $form_state->getValue('number');
+      if($number === "" || $indexnumber_id === 0)
+        $number = null;
+    
     $fields = [
       'content' => $form_state->getValue('content'),
-      'number' => $form_state->getValue('number'),
-      'index_id' => $form_state->getValue('index_id'),
+      'number' => $number,
+      'index_id' => $index_id,
       'item_id' => $idItem,
       'peso' => 0,
       'createdby' => $user->id(),

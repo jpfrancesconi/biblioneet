@@ -2,34 +2,35 @@
   {{ search_form }}
   {% if results %}
   <h1>Listado de ítems encontrados</h1>
-  <div class="container-fluid">
+  <div class="container-fluid container-items">
     <p>Mostrando registros {{ results_counter.start }} - {{ results_counter.end }} de  {{ results_counter.total }} </p>
 	  <p> {{ pager }} </p>
-    <div class="row" style="margin: 0 auto; display: flex;
-		    flex-wrap: wrap; justify-content: space-between;">
-      {% for item in results %}
-      <div class="card" style="width: 18rem; text-align: center;">
-        <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="text-align: center; width: 150px; height: 150px; object-fit: cover; margin: 0 auto;">
-        <div class="card-body">
-          <h5 class="card-title">{{ item.title }}{% if item.edit_item %}
-            <a href="{{item.id}}/edit" title="EDITAR"><i class="fas fa-edit"></i></a>
-          {% endif %}</h5>
-          {% if item.editorial %}<p>Editorial: {{ item.editorial }}</p>{% endif %}
-          <p>Tipo:{{ item.itemType }}</p>
-          <p class="badge badge-pill badge-success">Disponibles: {{ item.available }}</p>
-          <p class="badge badge-pill badge-danger">No disponibles: {{ item.not_available }}</p>
-          {# <p class="badge badge-pill badge-success">{{ item.articleFormat }}</p> #}
-          {#{ kint(item) }#}
-        </div>
+    
+    {% for item in results %}
+    <div class="row container-item-row">
+    <div class="col-sd-12 container-item-col">
+      <img class="card-img-top" src="{{ item.picture['data']['#attributes']['src'] }}" alt="Card image cap" style="text-align: center; width: 150px; height: 150px; object-fit: cover; margin: 0 auto;">
+      <div class="container-item-col-body">
+        <h5 class="card-title">{{ item.title }}{% if item.edit_item %}
+          <a href="{{item.id}}/edit" title="EDITAR"><i class="fas fa-edit"></i></a>
+        {% endif %}</h5>
+        {% if item.edition %}<p>Edicion: {{ item.edition }}</p>{% endif %}
+        {% if item.editorial %}<p>{{ item.publicationPlace }}: {{ item.editorial }}, {{ item.publicationYear }}</p>{% endif %}
+        <p>Tipo:{{ item.itemType }}</p>
+        <p class="badge badge-pill badge-success">Disponibles: {{ item.available }}</p>
+        <p class="badge badge-pill badge-danger">No disponibles: {{ item.not_available }}</p>
+        {#{ kint(item) }#}
       </div>
-      {% endfor %}
     </div>
+    </div>
+    {% endfor %}
+
   </div>
   {% else %}
   <div class="container-fluid p-0 mt-1">
     <div class="m-0 auto">
     {% if results_counter == -1 %}
-      <h4>Ingrese algun filtro y presione BUSCAR</h4>
+      <p>Ingrese algun filtro y presione BUSCAR</p>
     {% else %}
       <h6>No se han encontrado resultados para los filtros ingresados</h6>
     {% endif %}
