@@ -19,6 +19,11 @@ use Drupal\io_generic_abml\Form\Instances\ItemInstancesTableForm;
 
 class InstancesController extends GenericABMLController {
   /**
+   * ROUTE_TO_RETURN is the route to return at the end of the differntes form flows.
+   */
+  const ROUTE_TO_RETURN = 'io_generic_abml.items.instances.list';
+
+  /**
    * List instances of an item and manage them
    */
   public function listInstancesByItem(int $id) {
@@ -47,6 +52,28 @@ class InstancesController extends GenericABMLController {
       '#attributes' => ['class' => ['btn', 'btn-danger', 'btn-sm']],
       '#url' => Url::fromRoute('io_generic_abml.items.list'),
     ];
+
+    return $content;
+  }
+
+  public function generateqr(int $id) {
+    $content = [];
+    
+    $content['qr'] = [
+      '#type' => 'markup',
+      '#markup' => '<div>QR</div>',
+    ];
+
+    $content['container']['actions'] = [
+      '#type' => 'actions',
+    ];
+    $content['actions']['cancel'] = [
+      '#type' => 'link',
+      '#title' => 'VOLVER',
+      '#attributes' => ['class' => ['btn', 'btn-danger', 'btn-sm']],
+      '#url' => Url::fromRoute(self::ROUTE_TO_RETURN, ['id' => $id]),
+    ];
+    
 
     return $content;
   }

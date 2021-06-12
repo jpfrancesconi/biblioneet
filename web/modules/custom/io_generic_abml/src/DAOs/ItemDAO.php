@@ -96,34 +96,52 @@ class ItemDAO extends GenericDAO {
           // If $search_key is not null means that need to add the where condition.
           if (!is_null($search_item)) {
             // -- Recuperar item por cualquier criterio
-            // -- datos del item o autores o materia
-            // SELECT it.id, it.title
-            // FROM bn_item it
-            // WHERE it.title LIKE '%LITERATURA%'
-            // OR it.id IN (
-            //       SELECT it2.id FROM bn_item it2
-            //             JOIN bn_item_author ia2 ON ia2.item_id = it2.id
-            //             JOIN bn_author a2 ON a2.id = ia2.author_id
-            //             WHERE a2.first_name LIKE '%LITERATURA%' OR a2.last_name LIKE '%LITERATURA%'
-            //       )
-            // OR it.id IN (
-            //       SELECT it3.id FROM bn_item it3
-            //             JOIN bn_item_clasification ic3 ON ic3.item_id = it3.id
-            //             JOIN bn_clasification c3 ON c3.id = ic3.clasification_id
-            //             WHERE c3.code LIKE '%LITERATURA%' OR c3.materia LIKE '%LITERATURA%'
-            //       );
-                        
-            // Add LEFT JOIN to bn_item_author table
-            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
-            // Add LEFT JOIN to bn_author table
-            $query->leftjoin('bn_author', 'aut', 'aut.id = ite_aut.author_id');
+            // -- del item title, parallel_title, isbn, issn, serie_title 
+            // -- autores 
+            // -- materia (clasificacion)
+            // -- indice
+            
+            // Subquerys creations
+            // Authors subquery
+            $subqueryAuthors = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS.'2')
+              ->fields(self::TABLE_ALIAS.'2', ['id']);
+            // Add JOIN to bn_item_author table
+            $subqueryAuthors->join('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '2.id');
+            // Add JOIN to bn_author table
+            $subqueryAuthors->join('bn_author', 'aut', 'aut.id = ite_aut.author_id');
+            $group = $subqueryAuthors->orConditionGroup()
+                ->condition('aut.first_name', "%" . Html::escape($search_item) . "%", 'LIKE')
+                ->condition('aut.last_name', "%" . Html::escape($search_item) . "%", 'LIKE');
+            $subqueryAuthors->condition($group);
+            
+            // Clasifications subquery
+            $subqueryClasifications = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS.'3')
+            ->fields(self::TABLE_ALIAS.'3', ['id']);;
+            // Add JOIN to bn_item_clasification table
+            $subqueryClasifications->join('bn_item_clasification', 'ite_cla', 'ite_cla.item_id = ' . self::TABLE_ALIAS . '3.id');
+            // Add JOIN to bn_clasification table
+            $subqueryClasifications->join('bn_clasification', 'cla', 'cla.id = ite_cla.clasification_id');
+            $group = $subqueryClasifications->orConditionGroup()
+                ->condition('cla.code', "%" . Html::escape($search_item) . "%", 'LIKE')
+                ->condition('cla.materia', "%" . Html::escape($search_item) . "%", 'LIKE');
+            $subqueryClasifications->condition($group);
+
+            // Indexes subquery
+            $subqueryIndexes = \Drupal::database()->select(self::TABLE_NAME, self::TABLE_ALIAS.'4')
+            ->fields(self::TABLE_ALIAS.'4', ['id']);;
+            // Add JOIN to bn_index table
+            $subqueryIndexes->join('bn_index', 'ind', 'ind.item_id = ' . self::TABLE_ALIAS . '4.id');
+            $subqueryIndexes->condition('ind.content', "%" . Html::escape($search_item) . "%", 'LIKE');
+
             $group = $query->orConditionGroup()
               ->condition(self::TABLE_ALIAS . '.title', "%" . Html::escape($search_item) . "%", 'LIKE')
               ->condition(self::TABLE_ALIAS . '.parallel_title', "%" . Html::escape($search_item) . "%", 'LIKE')
-              ->condition('aut.first_name', "%" . Html::escape($search_item) . "%", 'LIKE')
-              ->condition('aut.last_name', "%" . Html::escape($search_item) . "%", 'LIKE')
               ->condition(self::TABLE_ALIAS . '.isbn', "%" . Html::escape($search_item) . "%", 'LIKE')
-              ->condition(self::TABLE_ALIAS . '.issn', "%" . Html::escape($search_item) . "%", 'LIKE');
+              ->condition(self::TABLE_ALIAS . '.issn', "%" . Html::escape($search_item) . "%", 'LIKE')
+              ->condition(self::TABLE_ALIAS . '.serie_title', "%" . Html::escape($search_item) . "%", 'LIKE')
+              ->condition(self::TABLE_ALIAS .'.id', $subqueryAuthors, 'IN')
+              ->condition(self::TABLE_ALIAS .'.id', $subqueryClasifications, 'IN')
+              ->condition(self::TABLE_ALIAS .'.id', $subqueryIndexes, 'IN');
             $query->condition($group);
           }
           break;
@@ -141,10 +159,10 @@ class ItemDAO extends GenericDAO {
         case '2':
           # AUTOR
           if (!is_null($search_item)) {
-            // Add LEFT JOIN to bn_item_author table
-            $query->leftjoin('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
-            // Add LEFT JOIN to bn_author table
-            $query->leftjoin('bn_author', 'aut', 'aut.id = ite_aut.author_id');
+            // Add JOIN to bn_item_author table
+            $query->join('bn_item_author', 'ite_aut', 'ite_aut.item_id = ' . self::TABLE_ALIAS . '.id');
+            // Add JOIN to bn_author table
+            $query->join('bn_author', 'aut', 'aut.id = ite_aut.author_id');
             $group = $query->orConditionGroup()
               ->condition('aut.first_name', "%" . Html::escape($search_item) . "%", 'LIKE')
               ->condition('aut.last_name', "%" . Html::escape($search_item) . "%", 'LIKE');
@@ -154,7 +172,7 @@ class ItemDAO extends GenericDAO {
 
         case '3':
           # MATERIA
-          // Relation between bn_item and bn?clasification throught bn_item_clasifiation table
+          // Relation between bn_item and bn_clasification throught bn_item_clasifiation table
           /**
            * SELECT it.id, it.title, c.id, c.materia 
            *   FROM biblioneet_dev.bn_item it

@@ -150,6 +150,18 @@ io_generic_abml.items.instances.delete:
       id:
         type: int
 
+io_generic_ablm.items.instances.qr.generate:
+  path: '/items/instances/{id}/qr'
+  defaults:
+    _controller: '\Drupal\io_generic_abml\Controller\InstancesController::generateqr'
+    _title: 'Generar QR'
+  requirements:
+    _permission: 'manage item instances'
+  options:
+    parameters:
+      id:
+        type: int
+
 # Indexes
 io_generic_abml.items.indexes.list:
   path: '/items/indexes/{id}/list'

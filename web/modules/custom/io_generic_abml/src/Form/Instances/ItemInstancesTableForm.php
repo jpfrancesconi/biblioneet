@@ -97,7 +97,7 @@ class ItemInstancesTableForm implements FormInterface {
       $deleteLink = \Drupal::service('link_generator')->generate(t('<i class="far fa-trash-alt"></i>'), $deletetUrl);
 
       // prepare Qr generator link
-      $qrGenerateUrl = Url::fromRoute('io_generic_abml.items.instances.edit', ['id' => $instanceDTO->getId()], ['attributes' => ['title' => 'Generar QR']]);
+      $qrGenerateUrl = Url::fromRoute('io_generic_ablm.items.instances.qr.generate', ['id' => $instanceDTO->getId()], ['attributes' => ['title' => 'Generar QR']]);
       $qrGenerateLink = \Drupal::service('link_generator')->generate(t('<i class="fa fa-qrcode" aria-hidden="true"></i>'), $qrGenerateUrl);
 
       $operationLinks = t('@linkEdit @linkDelete @linkQrGenerate', array('@linkEdit' => $quickEditLink, '@linkDelete' => $deleteLink, '@linkQrGenerate' => $qrGenerateLink));
